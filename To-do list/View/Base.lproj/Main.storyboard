@@ -95,6 +95,9 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="0bV-q1-nKJ"/>
+                    <connections>
+                        <segue destination="Nrw-df-512" kind="show" id="khc-iJ-hUJ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -107,14 +110,52 @@
                     <view key="view" contentMode="scaleToFill" id="e1f-yO-xrr">
                         <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="To do list" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cx1-k7-RHO">
+                                <rect key="frame" x="140" y="110" width="80.5" height="33.5"/>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="sq7-DJ-hzt">
+                                <rect key="frame" x="20" y="183.5" width="374" height="665.5"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GCz-2s-dYe">
+                                <rect key="frame" x="340.5" y="108" width="58.5" height="35.5"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Add">
+                                    <fontDescription key="titleFontDescription" type="system" weight="medium" pointSize="18"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="addButton:" destination="Nrw-df-512" eventType="touchUpInside" id="qFY-PP-Zc1"/>
+                                    <segue destination="jYg-3b-aeb" kind="show" id="VrA-dd-nx3"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="G1E-qy-NlN"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="systemGray5Color"/>
+                        <constraints>
+                            <constraint firstItem="GCz-2s-dYe" firstAttribute="leading" relation="lessThanOrEqual" secondItem="Cx1-k7-RHO" secondAttribute="trailing" constant="120" id="3nu-BQ-TxV"/>
+                            <constraint firstItem="G1E-qy-NlN" firstAttribute="trailing" secondItem="GCz-2s-dYe" secondAttribute="trailing" constant="15" id="AVX-ub-MMe"/>
+                            <constraint firstItem="G1E-qy-NlN" firstAttribute="trailing" secondItem="sq7-DJ-hzt" secondAttribute="trailing" constant="20" id="DYg-zf-Z2d"/>
+                            <constraint firstItem="GCz-2s-dYe" firstAttribute="top" secondItem="G1E-qy-NlN" secondAttribute="top" constant="20" id="Dtk-W7-p6j"/>
+                            <constraint firstItem="sq7-DJ-hzt" firstAttribute="leading" secondItem="G1E-qy-NlN" secondAttribute="leading" constant="20" id="Ll8-Bh-zJF"/>
+                            <constraint firstItem="G1E-qy-NlN" firstAttribute="bottom" secondItem="sq7-DJ-hzt" secondAttribute="bottom" constant="13" id="XCq-Ns-Zsv"/>
+                            <constraint firstItem="Cx1-k7-RHO" firstAttribute="leading" secondItem="G1E-qy-NlN" secondAttribute="leading" constant="140" id="XHU-gJ-4fs"/>
+                            <constraint firstItem="Cx1-k7-RHO" firstAttribute="top" secondItem="G1E-qy-NlN" secondAttribute="top" constant="22" id="eIc-LR-vw2"/>
+                            <constraint firstItem="sq7-DJ-hzt" firstAttribute="top" secondItem="Cx1-k7-RHO" secondAttribute="bottom" constant="40" id="ps7-ae-f2v"/>
+                            <constraint firstItem="sq7-DJ-hzt" firstAttribute="top" secondItem="GCz-2s-dYe" secondAttribute="bottom" constant="40" id="vCY-AF-4FO"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Eft-wX-Bpu"/>
+                    <connections>
+                        <outlet property="tasksTableView" destination="sq7-DJ-hzt" id="Wic-4O-Wof"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="c66-YO-0re" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1774" y="110"/>
+            <point key="canvasLocation" x="1773.913043478261" y="109.82142857142857"/>
         </scene>
         <!--Task Details View Controller-->
         <scene sceneID="fRc-s4-S5z">
@@ -194,8 +235,8 @@
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
-        <systemColor name="systemGreenColor">
-            <color red="0.20392156862745098" green="0.7803921568627451" blue="0.34901960784313724" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <systemColor name="systemGray5Color">
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
