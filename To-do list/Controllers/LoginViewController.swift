@@ -9,11 +9,28 @@ import UIKit
 
 class LoginViewController: UIViewController {
 
+    var credentials = [Credentials]()
+    
+    
+    @IBOutlet weak var loginTextField: UITextField!
+    @IBOutlet weak var passwordTextField: UITextField!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
     }
 
 
+    @IBAction func signInButton(_ sender: UIButton) {
+        
+    }
+    
+    @IBAction func registerButton(_ sender: UIButton) {
+        credentials.append(
+            Credentials(login: loginTextField.text ?? "", password: passwordTextField.text ?? "")
+        )
+        print(credentials)
+    }
+    
 }
 
