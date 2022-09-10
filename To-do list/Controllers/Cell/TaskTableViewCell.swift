@@ -1,43 +1,52 @@
 //
-//  TaskDetailsViewController.swift
+//  TaskTableViewCell.swift
 //  To-do list
 //
-//  Created by Kyrylo Tokar on 2022-09-08.
+//  Created by Anastasia Bilous on 2022-09-09.
 //
 
 import UIKit
 
-class TaskDetailsViewController: UIViewController {
+class TaskTableViewCell: UITableViewCell {
+
+    
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet weak var deadlineLabel: UILabel!
     
     var counter = 0
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+     
+    }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
 
-        // Do any additional setup after loading the view.
+        
     }
     
-
     @IBAction func statusButton(_ sender: UIButton) {
         counter += 1
         switch counter {
         case 1:
             sender.backgroundColor = .systemOrange
             sender.setTitle("in progress", for: .normal)
-            // do your action
+            
         case 2:
             sender.backgroundColor = .systemRed
             sender.setTitle("done", for: .normal)
-            // do your action
+            
         case 3:
             sender.backgroundColor = .systemGreen
             sender.setTitle("to do", for: .normal)
             counter = 0
-            // do your action
+            
             
         default:
             break
         }
     }
-   
+    
 }

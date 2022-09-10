@@ -19,6 +19,8 @@
 		5376DC1528CBF1E900AE9E6D /* TaskTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5376DC1328CBF1E900AE9E6D /* TaskTableViewCell.xib */; };
 		5376DC1728CBFFDE00AE9E6D /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5376DC1628CBFFDE00AE9E6D /* Alert.swift */; };
 		5376DC1928CBFFFB00AE9E6D /* LoginStatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5376DC1828CBFFFB00AE9E6D /* LoginStatusManager.swift */; };
+		5376DC1C28CC09A600AE9E6D /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5376DC1B28CC09A600AE9E6D /* Task.swift */; };
+		5376DC1E28CC155A00AE9E6D /* CredentialsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5376DC1D28CC155A00AE9E6D /* CredentialsManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +38,8 @@
 		5376DC1328CBF1E900AE9E6D /* TaskTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TaskTableViewCell.xib; sourceTree = "<group>"; };
 		5376DC1628CBFFDE00AE9E6D /* Alert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		5376DC1828CBFFFB00AE9E6D /* LoginStatusManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginStatusManager.swift; sourceTree = "<group>"; };
+		5376DC1B28CC09A600AE9E6D /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
+		5376DC1D28CC155A00AE9E6D /* CredentialsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +72,7 @@
 		5376DBF428CAE18400AE9E6D /* To-do list */ = {
 			isa = PBXGroup;
 			children = (
+				5376DC1A28CC096800AE9E6D /* Helpers */,
 				5376DC1128CAE33C00AE9E6D /* Models */,
 				5376DC1028CAE31A00AE9E6D /* View */,
 				5376DC0F28CAE29000AE9E6D /* Controllers */,
@@ -83,10 +88,10 @@
 		5376DC0F28CAE29000AE9E6D /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				5376DC0B28CAE25000AE9E6D /* TaskDetailsViewController.swift */,
-				5376DC0928CAE23700AE9E6D /* TaskListViewController.swift */,
 				5376DBF928CAE18400AE9E6D /* LoginViewController.swift */,
-				5376DC1228CBF1E900AE9E6D /* TaskTableViewCell.swift */,
+				5376DC0928CAE23700AE9E6D /* TaskListViewController.swift */,
+				5376DC0B28CAE25000AE9E6D /* TaskDetailsViewController.swift */,
+				5376DC1F28CC19E900AE9E6D /* Cell */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -103,10 +108,27 @@
 		5376DC1128CAE33C00AE9E6D /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				5376DC1628CBFFDE00AE9E6D /* Alert.swift */,
-				5376DC1828CBFFFB00AE9E6D /* LoginStatusManager.swift */,
+				5376DC1B28CC09A600AE9E6D /* Task.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		5376DC1A28CC096800AE9E6D /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				5376DC1628CBFFDE00AE9E6D /* Alert.swift */,
+				5376DC1828CBFFFB00AE9E6D /* LoginStatusManager.swift */,
+				5376DC1D28CC155A00AE9E6D /* CredentialsManager.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		5376DC1F28CC19E900AE9E6D /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				5376DC1228CBF1E900AE9E6D /* TaskTableViewCell.swift */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -181,6 +203,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5376DC1E28CC155A00AE9E6D /* CredentialsManager.swift in Sources */,
 				5376DC0C28CAE25000AE9E6D /* TaskDetailsViewController.swift in Sources */,
 				5376DBFA28CAE18400AE9E6D /* LoginViewController.swift in Sources */,
 				5376DC1428CBF1E900AE9E6D /* TaskTableViewCell.swift in Sources */,
@@ -188,6 +211,7 @@
 				5376DC0A28CAE23700AE9E6D /* TaskListViewController.swift in Sources */,
 				5376DBF628CAE18400AE9E6D /* AppDelegate.swift in Sources */,
 				5376DBF828CAE18400AE9E6D /* SceneDelegate.swift in Sources */,
+				5376DC1C28CC09A600AE9E6D /* Task.swift in Sources */,
 				5376DC1728CBFFDE00AE9E6D /* Alert.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
