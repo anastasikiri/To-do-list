@@ -8,8 +8,8 @@
 import Foundation
 
 struct Task: Codable {
-    var title = String()
-    var description = String()
-    var deadline = String()
-    var status = String()
+    var title: String
+    var description: String
+    var deadline: String
+    var status: String
 }
