@@ -18,9 +18,7 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         users = UserDefaultsManager.shared.getValueForUser() ?? [User]()
-        print(users)
     }
     
     @IBAction func signInButton(_ sender: UIButton) {
@@ -76,8 +74,6 @@ class LoginViewController: UIViewController {
             users.append(User(login: loginTextField.text ?? "",
                               password: passwordTextField.text ?? ""))
             UserDefaultsManager.shared.setValueForUser(value: users)
-            
-            print(users)
             loginTextField.text = ""
             passwordTextField.text = ""
             
@@ -97,8 +93,6 @@ class LoginViewController: UIViewController {
                 users.append(User(login: loginTextField.text ?? "",
                                   password: passwordTextField.text ?? ""))
                 UserDefaultsManager.shared.setValueForUser(value: users)
-                
-                print(users)
                 loginTextField.text = ""
                 passwordTextField.text = ""
                 
