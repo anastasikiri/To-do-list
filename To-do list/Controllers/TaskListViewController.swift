@@ -7,11 +7,13 @@
 
 import UIKit
 
-class TaskListViewController: UIViewController, TaskTableViewCellDelegate {
-    
-    var userIndex = Int()
-    var users = [User]()
+class TaskListViewController: UIViewController,
+                              TaskTableViewCellDelegate,
+                              TaskDetailsViewControllerDelegate {
+  
     var tasks = [Task]()
+    var taskIndex = Int()
+    var choosenTableViewCell = Bool()
     
     @IBOutlet weak var tasksTableView: UITableView!
     
@@ -25,16 +27,15 @@ class TaskListViewController: UIViewController, TaskTableViewCellDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        users = UserDefaultsManager.shared.getValueForUser() ?? [User]()
-        tasks = users[userIndex].task ?? [Task]()
         tasksTableView.reloadData()
     }
     
     @IBAction func addButton(_ sender: UIButton) {
         let taskDetailsVC = self.storyboard?.instantiateViewController(
             withIdentifier: "TaskDetailsViewController") as? TaskDetailsViewController
-        taskDetailsVC?.userIndex = userIndex
-        taskDetailsVC?.choosenTableViewCell = false
+        choosenTableViewCell = false
+        taskDetailsVC?.choosenTableViewCell = choosenTableViewCell
+        taskDetailsVC?.delegate = self
         self.navigationController?.pushViewController(taskDetailsVC!, animated: true)
     }
     
@@ -44,30 +45,31 @@ class TaskListViewController: UIViewController, TaskTableViewCellDelegate {
             
             
             switch currentStatus {
-            case "in progress":
-                currentStatus = "done"
-                print("current status: \(currentStatus)")
+            case .inProgress:
+                currentStatus = .done
                 tasks[chosenIndex.row].status = currentStatus
                 tasksTableView.reloadData()
-                users[userIndex].task?[chosenIndex.row].status = currentStatus
-                UserDefaultsManager.shared.setValueForUser(value: users)
-            case "done":
-                currentStatus = "to do"
-                print("current status: \(currentStatus)")
+            case .done:
+                currentStatus = .todo
                 tasks[chosenIndex.row].status = currentStatus
                 tasksTableView.reloadData()
-                users[userIndex].task?[chosenIndex.row].status = currentStatus
-                UserDefaultsManager.shared.setValueForUser(value: users)
-            case "to do":
-                currentStatus = "in progress"
-                print("current status: \(currentStatus)")
+            case .todo:
+                currentStatus = .inProgress
                 tasks[chosenIndex.row].status = currentStatus
                 tasksTableView.reloadData()
-                users[userIndex].task?[chosenIndex.row].status = currentStatus
-                UserDefaultsManager.shared.setValueForUser(value: users)
             default:
                 break
             }
+        }
+    }
+    
+    func sendTaskDetails(_: TaskDetailsViewController, didCreateUpdate task: Task) {
+        if choosenTableViewCell == false {
+            tasks.append(task)
+            tasksTableView.reloadData()
+        } else {
+            tasks[taskIndex] = task
+            tasksTableView.reloadData()
         }
     }
 }
@@ -77,9 +79,11 @@ extension TaskListViewController: UITableViewDelegate {
         tasksTableView.deselectRow(at: indexPath, animated: true)
         let taskDetailsVC = self.storyboard?.instantiateViewController(
             withIdentifier: "TaskDetailsViewController") as? TaskDetailsViewController
-        taskDetailsVC?.userIndex = userIndex
-        taskDetailsVC?.taskIndex = indexPath.row
-        taskDetailsVC?.choosenTableViewCell = true
+        taskIndex = indexPath.row
+        taskDetailsVC?.task = tasks[indexPath.row]
+        choosenTableViewCell = true
+        taskDetailsVC?.choosenTableViewCell = choosenTableViewCell
+        taskDetailsVC?.delegate = self
         self.navigationController?.pushViewController(taskDetailsVC!, animated: true)
     }
     
@@ -88,9 +92,7 @@ extension TaskListViewController: UITableViewDelegate {
                    forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             tableView.beginUpdates()
-            users[userIndex].task?.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
-            UserDefaultsManager.shared.setValueForUser(value: users)
             tableView.endUpdates()
         }
     }
@@ -98,7 +100,6 @@ extension TaskListViewController: UITableViewDelegate {
 
 extension TaskListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //        return users[userIndex].task?.count ?? 0
         return tasks.count
     }
     
@@ -108,20 +109,18 @@ extension TaskListViewController: UITableViewDataSource {
         else {
             fatalError()
         }
-        tasks = tasks.sorted(by: { $0.status > $1.status })
-        users[userIndex].task = tasks
-        UserDefaultsManager.shared.setValueForUser(value: users)
+        tasks = tasks.sorted(by: { $0.status!.rawValue > $1.status!.rawValue })
         cell.titleLabel.text = tasks[indexPath.row].title
         cell.descriptionLabel.text = tasks[indexPath.row].description
-        cell.deadlineLabel.text = tasks[indexPath.row].deadline
-        cell.statusButtonOutlet.setTitle(tasks[indexPath.row].status, for: .normal)
+        cell.deadlineLabel.text = DateFormatter().string(from: tasks[indexPath.row].deadline ?? Date())
+        cell.statusButtonOutlet.setTitle(tasks[indexPath.row].status?.rawValue, for: .normal)
         
         switch tasks[indexPath.row].status {
-        case "in progress":
+        case .inProgress:
             cell.statusButtonOutlet.backgroundColor = .systemOrange
-        case "done":
+        case .done:
             cell.statusButtonOutlet.backgroundColor = .systemRed
-        case "to do":
+        case .todo:
             cell.statusButtonOutlet.backgroundColor = .systemGreen
         default:
             break

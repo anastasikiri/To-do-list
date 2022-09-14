@@ -20,7 +20,6 @@
 		5376DC1728CBFFDE00AE9E6D /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5376DC1628CBFFDE00AE9E6D /* Alert.swift */; };
 		5376DC1C28CC09A600AE9E6D /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5376DC1B28CC09A600AE9E6D /* Task.swift */; };
 		5376DC2128CC20C500AE9E6D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5376DC2028CC20C500AE9E6D /* User.swift */; };
-		5376DC2328CC220100AE9E6D /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5376DC2228CC220100AE9E6D /* UserDefaultsManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,7 +38,6 @@
 		5376DC1628CBFFDE00AE9E6D /* Alert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		5376DC1B28CC09A600AE9E6D /* Task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Task.swift; sourceTree = "<group>"; };
 		5376DC2028CC20C500AE9E6D /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		5376DC2228CC220100AE9E6D /* UserDefaultsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,7 +108,6 @@
 				5376DC1B28CC09A600AE9E6D /* Task.swift */,
 				5376DC2028CC20C500AE9E6D /* User.swift */,
 				5376DC1628CBFFDE00AE9E6D /* Alert.swift */,
-				5376DC2228CC220100AE9E6D /* UserDefaultsManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -199,7 +196,6 @@
 				5376DBFA28CAE18400AE9E6D /* LoginViewController.swift in Sources */,
 				5376DC2128CC20C500AE9E6D /* User.swift in Sources */,
 				5376DC1428CBF1E900AE9E6D /* TaskTableViewCell.swift in Sources */,
-				5376DC2328CC220100AE9E6D /* UserDefaultsManager.swift in Sources */,
 				5376DC0A28CAE23700AE9E6D /* TaskListViewController.swift in Sources */,
 				5376DBF628CAE18400AE9E6D /* AppDelegate.swift in Sources */,
 				5376DBF828CAE18400AE9E6D /* SceneDelegate.swift in Sources */,
