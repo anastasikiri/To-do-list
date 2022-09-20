@@ -10,10 +10,8 @@ import UIKit
 class TaskListViewController: UIViewController,
                               TaskTableViewCellDelegate,
                               TaskDetailsViewControllerDelegate {
-  
-    var tasks = [Task]()
-    var taskIndex = Int()
-    var choosenTableViewCell = Bool()
+    
+    private var tasks = [Task]()
     
     @IBOutlet weak var tasksTableView: UITableView!
     
@@ -24,67 +22,42 @@ class TaskListViewController: UIViewController,
         tasksTableView.delegate = self
         tasksTableView.dataSource = self
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        tasksTableView.reloadData()
-    }
-    
+      
     @IBAction func addButton(_ sender: UIButton) {
-        let taskDetailsVC = self.storyboard?.instantiateViewController(
-            withIdentifier: "TaskDetailsViewController") as? TaskDetailsViewController
-        choosenTableViewCell = false
-        taskDetailsVC?.choosenTableViewCell = choosenTableViewCell
-        taskDetailsVC?.delegate = self
-        self.navigationController?.pushViewController(taskDetailsVC!, animated: true)
+        let taskDetailsVC = TaskDetailsViewController.loadFromStoryboard(
+            type: TaskDetailsViewController.self)
+        taskDetailsVC.id = tasks.count+1
+        taskDetailsVC.delegate = self
+        self.navigationController?.pushViewController(taskDetailsVC, animated: true)
     }
     
     func didTapStatusButton(cell: TaskTableViewCell) {
-        if let chosenIndex = tasksTableView.indexPath(for: cell) {
-            var currentStatus = tasks[chosenIndex.row].status
-            
-            
-            switch currentStatus {
-            case .inProgress:
-                currentStatus = .done
-                tasks[chosenIndex.row].status = currentStatus
-                tasksTableView.reloadData()
-            case .done:
-                currentStatus = .todo
-                tasks[chosenIndex.row].status = currentStatus
-                tasksTableView.reloadData()
-            case .todo:
-                currentStatus = .inProgress
-                tasks[chosenIndex.row].status = currentStatus
-                tasksTableView.reloadData()
-            default:
-                break
-            }
+        if let chosenIndex = tasksTableView.indexPath(for: cell) {                       
+            tasks[chosenIndex.row].status = StatusButton.changeStatus(tasks[chosenIndex.row].status)
         }
+        tasksTableView.reloadData()
     }
     
-    func sendTaskDetails(_: TaskDetailsViewController, didCreateUpdate task: Task) {
-        if choosenTableViewCell == false {
-            tasks.append(task)
-            tasksTableView.reloadData()
+    func taskDetails(_ controller: TaskDetailsViewController, didCreateUpdate task: Task) {
+        if let index = tasks.firstIndex(where: { $0.id == task.id}) {
+            tasks[index] = task
         } else {
-            tasks[taskIndex] = task
-            tasksTableView.reloadData()
+            tasks.append(task)
         }
+        tasksTableView.reloadData()
     }
 }
 
 extension TaskListViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView,
+                   didSelectRowAt indexPath: IndexPath) {
         tasksTableView.deselectRow(at: indexPath, animated: true)
-        let taskDetailsVC = self.storyboard?.instantiateViewController(
-            withIdentifier: "TaskDetailsViewController") as? TaskDetailsViewController
-        taskIndex = indexPath.row
-        taskDetailsVC?.task = tasks[indexPath.row]
-        choosenTableViewCell = true
-        taskDetailsVC?.choosenTableViewCell = choosenTableViewCell
-        taskDetailsVC?.delegate = self
-        self.navigationController?.pushViewController(taskDetailsVC!, animated: true)
+        let taskDetailsVC = TaskDetailsViewController.loadFromStoryboard(
+            type: TaskDetailsViewController.self)
+        taskDetailsVC.viewType = .updateTask
+        taskDetailsVC.task = tasks[indexPath.row]
+        taskDetailsVC.delegate = self
+        self.navigationController?.pushViewController(taskDetailsVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView,
@@ -106,25 +79,9 @@ extension TaskListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: "TaskTableViewCell",for: indexPath) as? TaskTableViewCell
-        else {
-            fatalError()
-        }
-        tasks = tasks.sorted(by: { $0.status!.rawValue > $1.status!.rawValue })
-        cell.titleLabel.text = tasks[indexPath.row].title
-        cell.descriptionLabel.text = tasks[indexPath.row].description
-        cell.deadlineLabel.text = DateFormatter().string(from: tasks[indexPath.row].deadline ?? Date())
-        cell.statusButtonOutlet.setTitle(tasks[indexPath.row].status?.rawValue, for: .normal)
-        
-        switch tasks[indexPath.row].status {
-        case .inProgress:
-            cell.statusButtonOutlet.backgroundColor = .systemOrange
-        case .done:
-            cell.statusButtonOutlet.backgroundColor = .systemRed
-        case .todo:
-            cell.statusButtonOutlet.backgroundColor = .systemGreen
-        default:
-            break
-        }
+        else { fatalError() }
+        tasks = tasks.sorted(by: { $0.status.rawValue > $1.status.rawValue })
+        cell.configure(tasks[indexPath.row])
         cell.delegate = self
         return cell
     }

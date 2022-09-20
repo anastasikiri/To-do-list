@@ -5,8 +5,6 @@
 //  Created by Kyrylo Tokar on 2022-09-09.
 //
 
-import Foundation
-
 import UIKit
 
 class Alert {

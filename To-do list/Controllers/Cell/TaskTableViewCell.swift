@@ -20,16 +20,15 @@ class TaskTableViewCell: UITableViewCell {
     @IBOutlet weak var deadlineLabel: UILabel!
     @IBOutlet weak var statusButtonOutlet: UIButton!
     
- 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-    
     @IBAction func statusButton(_ sender: UIButton) {
         delegate?.didTapStatusButton(cell: self)
+    }
+    
+    func configure(_ task: Task) {
+        titleLabel.text = task.title
+        descriptionLabel.text = task.description
+        deadlineLabel.text = task.deadline.formatDate(date: task.deadline)
+        StatusButton.updateStatus(statusButtonOutlet, task.status)
     }
 }

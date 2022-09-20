@@ -7,11 +7,12 @@
 
 import Foundation
 
-struct Task: Codable {
-    var title: String?
-    var description: String?
-    var deadline: Date?
-    var status: Status?
+struct Task: Codable, Equatable {
+    var title: String = ""
+    var description: String = ""
+    var deadline: Date = .now
+    var status: Status = .todo
+    var id: Int = 0
     
     enum Status: String, Codable {
         case todo = "to do"

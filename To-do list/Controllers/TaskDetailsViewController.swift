@@ -8,7 +8,7 @@
 import UIKit
 
 protocol TaskDetailsViewControllerDelegate: AnyObject {
-    func sendTaskDetails(_: TaskDetailsViewController, didCreateUpdate task: Task)
+    func taskDetails(_ controller: TaskDetailsViewController, didCreateUpdate task: Task)
 }
 
 class TaskDetailsViewController: UIViewController {
@@ -18,77 +18,31 @@ class TaskDetailsViewController: UIViewController {
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var descriptionTextField: UITextField!
     @IBOutlet weak var statusButtonOutlet: UIButton!
+  
+    enum ViewType {
+        case createTask
+        case updateTask
+    }
     
-    
-
     var task = Task()
-    var counter = 0
-    var status = Task.Status.todo
-    var choosenTableViewCell = Bool()
+    var viewType = ViewType.createTask
+    var id = Int()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-       
-        if choosenTableViewCell {
+        if viewType == .updateTask {
             titleTextField.text = task.title
             descriptionTextField.text = task.description
-            status = task.status!
-            
-            switch status {
-            case .inProgress:
-                statusButtonOutlet.backgroundColor = .systemOrange
-                statusButtonOutlet.setTitle(status.rawValue, for: .normal)
-            case .done:
-                statusButtonOutlet.backgroundColor = .systemRed
-                statusButtonOutlet.setTitle(status.rawValue, for: .normal)
-            case .todo:
-                statusButtonOutlet.backgroundColor = .systemGreen
-                statusButtonOutlet.setTitle(status.rawValue, for: .normal)
-            default:
-                break
-            }
+            id = task.id
+            StatusButton.updateStatus(statusButtonOutlet, task.status)
         }
     }
     
-    @IBAction func statusButton(_ sender: UIButton) {
-        if choosenTableViewCell == false {
-            counter += 1
-            switch counter {
-            case 1:
-                status = .inProgress
-                sender.backgroundColor = .systemOrange
-                sender.setTitle(status.rawValue, for: .normal)
-            case 2:
-                status = .done
-                sender.backgroundColor = .systemRed
-                sender.setTitle(status.rawValue, for: .normal)
-            case 3:
-                status = .todo
-                sender.backgroundColor = .systemGreen
-                sender.setTitle(status.rawValue, for: .normal)
-                counter = 0
-            default:
-                break
-            }
-        } else {
-            switch status {
-            case .inProgress:
-                status = .done
-                sender.backgroundColor = .systemRed
-                sender.setTitle(status.rawValue, for: .normal)
-            case .done:
-                status = .todo
-                sender.backgroundColor = .systemGreen
-                sender.setTitle(status.rawValue, for: .normal)
-            case .todo:
-                status = .inProgress
-                sender.backgroundColor = .systemOrange
-                sender.setTitle(status.rawValue, for: .normal)
-            default:
-                break
-            }
-        }
+    @IBAction func changeStatusButton(_ sender: UIButton) {
+        task.status = StatusButton.changeStatus(task.status)
+        StatusButton.updateStatus(statusButtonOutlet, task.status)
+
     }
     
     @IBAction func submitButton(_ sender: UIButton) {
@@ -105,8 +59,9 @@ class TaskDetailsViewController: UIViewController {
             let newTask = Task(title: titleTextField.text!,
                                description: descriptionTextField.text!,
                                deadline: Date(),
-                               status: status)
-            delegate?.sendTaskDetails(TaskDetailsViewController(), didCreateUpdate: newTask)
+                               status: task.status,
+                               id: id)
+            delegate?.taskDetails(TaskDetailsViewController(), didCreateUpdate: newTask)
             navigationController?.popViewController(animated: true)
         }
     }
