@@ -15,34 +15,40 @@ class TaskDetailsViewController: UIViewController {
     
     weak var delegate: TaskDetailsViewControllerDelegate?
     
-    @IBOutlet weak var titleTextField: UITextField!
-    @IBOutlet weak var descriptionTextField: UITextField!
-    @IBOutlet weak var statusButtonOutlet: UIButton!
+    @IBOutlet private weak var titleTextField: UITextField!
+    @IBOutlet private weak var descriptionTextField: UITextField!
+    @IBOutlet private weak var statusButtonOutlet: UIButton!
   
-    enum ViewType {
-        case createTask
-        case updateTask
-    }
-    
+
     var task = Task()
-    var viewType = ViewType.createTask
-    var id = Int()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if viewType == .updateTask {
-            titleTextField.text = task.title
-            descriptionTextField.text = task.description
-            id = task.id
-            StatusButton.updateStatus(statusButtonOutlet, task.status)
-        }
+        prepareUIElements()
     }
     
+    func prepareUIElements() {
+            titleTextField.text = task.title
+            descriptionTextField.text = task.description
+            updateStatusUI(statusButtonOutlet, task.status)
+    }
+    
+    func updateStatusUI(_ sender: UIButton, _ status: Task.Status) {
+        sender.setTitle(status.rawValue, for: .normal)        
+        switch status {
+        case .inProgress:
+            sender.backgroundColor = .systemOrange
+        case .done:
+            sender.backgroundColor = .systemRed
+        case .todo:
+            sender.backgroundColor = .systemGreen
+        }
+    }       
+    
     @IBAction func changeStatusButton(_ sender: UIButton) {
-        task.status = StatusButton.changeStatus(task.status)
-        StatusButton.updateStatus(statusButtonOutlet, task.status)
-
+        task.status = task.status.nextState
+        updateStatusUI(statusButtonOutlet, task.status)
     }
     
     @IBAction func submitButton(_ sender: UIButton) {
@@ -60,7 +66,7 @@ class TaskDetailsViewController: UIViewController {
                                description: descriptionTextField.text!,
                                deadline: Date(),
                                status: task.status,
-                               id: id)
+                               id: task.id)
             delegate?.taskDetails(TaskDetailsViewController(), didCreateUpdate: newTask)
             navigationController?.popViewController(animated: true)
         }

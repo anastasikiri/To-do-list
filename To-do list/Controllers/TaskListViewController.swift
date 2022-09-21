@@ -26,14 +26,18 @@ class TaskListViewController: UIViewController,
     @IBAction func addButton(_ sender: UIButton) {
         let taskDetailsVC = TaskDetailsViewController.loadFromStoryboard(
             type: TaskDetailsViewController.self)
-        taskDetailsVC.id = tasks.count+1
+        taskDetailsVC.task = Task(title: "",
+                                  description: "",
+                                  deadline: .now,
+                                  status: .todo,
+                                  id: tasks.count+1)
         taskDetailsVC.delegate = self
         self.navigationController?.pushViewController(taskDetailsVC, animated: true)
     }
     
     func didTapStatusButton(cell: TaskTableViewCell) {
         if let chosenIndex = tasksTableView.indexPath(for: cell) {                       
-            tasks[chosenIndex.row].status = StatusButton.changeStatus(tasks[chosenIndex.row].status)
+            tasks[chosenIndex.row].status = tasks[chosenIndex.row].status.nextState
         }
         tasksTableView.reloadData()
     }
@@ -54,7 +58,6 @@ extension TaskListViewController: UITableViewDelegate {
         tasksTableView.deselectRow(at: indexPath, animated: true)
         let taskDetailsVC = TaskDetailsViewController.loadFromStoryboard(
             type: TaskDetailsViewController.self)
-        taskDetailsVC.viewType = .updateTask
         taskDetailsVC.task = tasks[indexPath.row]
         taskDetailsVC.delegate = self
         self.navigationController?.pushViewController(taskDetailsVC, animated: true)
@@ -64,9 +67,9 @@ extension TaskListViewController: UITableViewDelegate {
                    commit editingStyle: UITableViewCell.EditingStyle,
                    forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            tableView.beginUpdates()
+            tasks.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
-            tableView.endUpdates()
+            
         }
     }
 }
@@ -78,7 +81,7 @@ extension TaskListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: "TaskTableViewCell",for: indexPath) as? TaskTableViewCell
+            withIdentifier: String(describing: TaskTableViewCell.self)) as? TaskTableViewCell
         else { fatalError() }
         tasks = tasks.sorted(by: { $0.status.rawValue > $1.status.rawValue })
         cell.configure(tasks[indexPath.row])
