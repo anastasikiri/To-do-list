@@ -10,8 +10,7 @@ import UIKit
 class LoginViewController: UIViewController {
     
     @IBOutlet weak var loginTextField: UITextField!
-    @IBOutlet weak var passwordTextField: UITextField!
-       
+    @IBOutlet weak var passwordTextField: UITextField!    
     @IBAction func signInButton(_ sender: UIButton) {
         
         if  loginTextField.text?.isEmpty == true {
@@ -24,14 +23,14 @@ class LoginViewController: UIViewController {
                 vc: self)
         } else {
             let taskListVC = TaskListViewController.loadFromStoryboard(type: TaskListViewController.self)
-            self.navigationController?.pushViewController(taskListVC, animated: true)            
+            self.navigationController?.pushViewController(taskListVC, animated: true)
             loginTextField.text = ""
             passwordTextField.text = ""
         }
     }
     
     @IBAction func registerButton(_ sender: UIButton) {
-  
+        
     }
 }
 

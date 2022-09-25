@@ -230,7 +230,7 @@
                     <navigationItem key="navigationItem" id="sUD-Sq-ZeS"/>
                     <connections>
                         <outlet property="descriptionTextField" destination="s0R-3c-4DY" id="b51-X6-dDi"/>
-                        <outlet property="statusButtonOutlet" destination="PvM-pW-Ybd" id="IXw-yf-exT"/>
+                        <outlet property="statusButton" destination="PvM-pW-Ybd" id="IXw-yf-exT"/>
                         <outlet property="titleTextField" destination="IcG-0f-tWq" id="fbJ-Fv-rCX"/>
                     </connections>
                 </viewController>

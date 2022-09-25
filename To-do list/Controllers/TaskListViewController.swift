@@ -22,7 +22,7 @@ class TaskListViewController: UIViewController,
         tasksTableView.delegate = self
         tasksTableView.dataSource = self
     }
-      
+    
     @IBAction func addButton(_ sender: UIButton) {
         let taskDetailsVC = TaskDetailsViewController.loadFromStoryboard(
             type: TaskDetailsViewController.self)
@@ -35,9 +35,9 @@ class TaskListViewController: UIViewController,
         self.navigationController?.pushViewController(taskDetailsVC, animated: true)
     }
     
-    func didTapStatusButton(cell: TaskTableViewCell) {
-        if let chosenIndex = tasksTableView.indexPath(for: cell) {                       
-            tasks[chosenIndex.row].status = tasks[chosenIndex.row].status.nextState
+    func didTapStatusButton(cell: TaskTableViewCell, didClickOnStatus task: Task) {
+        if let index = tasks.firstIndex(where: { $0.id == task.id}) {
+            tasks[index].status = tasks[index].status.nextState
         }
         tasksTableView.reloadData()
     }
@@ -49,6 +49,10 @@ class TaskListViewController: UIViewController,
             tasks.append(task)
         }
         tasksTableView.reloadData()
+    }
+    
+    private func sortedTasks() {
+        tasks = tasks.sorted(by: { $0.status.rawValue > $1.status.rawValue })
     }
 }
 
@@ -83,8 +87,9 @@ extension TaskListViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: String(describing: TaskTableViewCell.self)) as? TaskTableViewCell
         else { fatalError() }
-        tasks = tasks.sorted(by: { $0.status.rawValue > $1.status.rawValue })
+        sortedTasks()
         cell.configure(tasks[indexPath.row])
+        cell.task = tasks[indexPath.row]
         cell.delegate = self
         return cell
     }

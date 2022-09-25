@@ -8,34 +8,37 @@
 import UIKit
 
 protocol TaskTableViewCellDelegate: AnyObject {
-    func didTapStatusButton(cell: TaskTableViewCell)
+    func didTapStatusButton(cell: TaskTableViewCell, didClickOnStatus task: Task)
 }
 
 class TaskTableViewCell: UITableViewCell {
     
+    var task : Task?
     weak var delegate: TaskTableViewCellDelegate?
     
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet private weak var descriptionLabel: UILabel!
     @IBOutlet private weak var deadlineLabel: UILabel!
-    @IBOutlet private weak var statusButtonOutlet: UIButton!
-
-    @IBAction func statusButton(_ sender: UIButton) {
-        delegate?.didTapStatusButton(cell: self)
+    @IBOutlet private weak var statusButton: UIButton!
+    
+    @IBAction func tapStatusButton(_ sender: UIButton) {
+        if let task = task {
+            self.delegate?.didTapStatusButton(cell: self, didClickOnStatus: task)}
     }
     
     func configure(_ task: Task) {
         titleLabel.text = task.title
         descriptionLabel.text = task.description
         deadlineLabel.text = task.deadline.formatDate(date: task.deadline)
-        statusButtonOutlet.setTitle(task.status.rawValue, for: .normal)
+        statusButton.setTitle(task.status.rawValue, for: .normal)
+        
         switch task.status {
         case .inProgress:
-            statusButtonOutlet.backgroundColor = .systemOrange
+            statusButton.backgroundColor = .systemOrange
         case .done:
-            statusButtonOutlet.backgroundColor = .systemRed
+            statusButton.backgroundColor = .systemRed
         case .todo:
-            statusButtonOutlet.backgroundColor = .systemGreen
+            statusButton.backgroundColor = .systemGreen
         }
     }
 }

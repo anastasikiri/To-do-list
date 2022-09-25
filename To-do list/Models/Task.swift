@@ -17,9 +17,10 @@ struct Task: Codable, Equatable {
     enum Status: String, Codable {
         case todo = "to do"
         case inProgress = "in progress"
-        case done = "done"        
+        case done = "done"
         
         var nextState: Task.Status {
+            
             switch self {
             case .todo: return .inProgress
             case .inProgress: return .done

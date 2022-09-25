@@ -17,9 +17,8 @@ class TaskDetailsViewController: UIViewController {
     
     @IBOutlet private weak var titleTextField: UITextField!
     @IBOutlet private weak var descriptionTextField: UITextField!
-    @IBOutlet private weak var statusButtonOutlet: UIButton!
-  
-
+    @IBOutlet private weak var statusButton: UIButton!
+    
     var task = Task()
     
     override func viewDidLoad() {
@@ -28,14 +27,15 @@ class TaskDetailsViewController: UIViewController {
         prepareUIElements()
     }
     
-    func prepareUIElements() {
-            titleTextField.text = task.title
-            descriptionTextField.text = task.description
-            updateStatusUI(statusButtonOutlet, task.status)
+    private func prepareUIElements() {
+        titleTextField.text = task.title
+        descriptionTextField.text = task.description
+        updateStatusUI(statusButton, task.status)
     }
     
-    func updateStatusUI(_ sender: UIButton, _ status: Task.Status) {
-        sender.setTitle(status.rawValue, for: .normal)        
+    private func updateStatusUI(_ sender: UIButton, _ status: Task.Status) {
+        sender.setTitle(status.rawValue, for: .normal)
+        
         switch status {
         case .inProgress:
             sender.backgroundColor = .systemOrange
@@ -44,15 +44,14 @@ class TaskDetailsViewController: UIViewController {
         case .todo:
             sender.backgroundColor = .systemGreen
         }
-    }       
+    }
     
     @IBAction func changeStatusButton(_ sender: UIButton) {
         task.status = task.status.nextState
-        updateStatusUI(statusButtonOutlet, task.status)
+        updateStatusUI(statusButton, task.status)
     }
     
-    @IBAction func submitButton(_ sender: UIButton) {
-        
+    @IBAction func submitButton(_ sender: UIButton) {        
         if  titleTextField.text?.isEmpty == true {
             Alert.showBasic(
                 title: "Please enter title of task",
