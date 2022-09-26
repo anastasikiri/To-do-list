@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="har-q5-K4t">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="har-q5-K4t">
     <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -114,7 +114,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="To do list" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cx1-k7-RHO">
-                                <rect key="frame" x="154.66666666666666" y="48" width="80.666666666666657" height="24"/>
+                                <rect key="frame" x="154.66666666666666" y="48" width="81" height="24"/>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -124,7 +124,7 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GCz-2s-dYe">
-                                <rect key="frame" x="317.66666666666669" y="42.333333333333343" width="57.333333333333314" height="35.666666666666657"/>
+                                <rect key="frame" x="317.66666666666669" y="42" width="57.333333333333314" height="36"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Add">
                                     <fontDescription key="titleFontDescription" type="system" weight="medium" pointSize="18"/>
@@ -198,7 +198,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="statusButton:" destination="jYg-3b-aeb" eventType="touchUpInside" id="dKg-hE-FtT"/>
+                                    <action selector="changeStatusButton:" destination="jYg-3b-aeb" eventType="touchUpInside" id="dlA-8z-hHd"/>
                                 </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" borderStyle="roundedRect" placeholder="Task description here" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="s0R-3c-4DY" userLabel="Description Text Field">
@@ -230,7 +230,7 @@
                     <navigationItem key="navigationItem" id="sUD-Sq-ZeS"/>
                     <connections>
                         <outlet property="descriptionTextField" destination="s0R-3c-4DY" id="b51-X6-dDi"/>
-                        <outlet property="statusButtonOutlet" destination="PvM-pW-Ybd" id="IXw-yf-exT"/>
+                        <outlet property="statusButton" destination="PvM-pW-Ybd" id="IXw-yf-exT"/>
                         <outlet property="titleTextField" destination="IcG-0f-tWq" id="fbJ-Fv-rCX"/>
                     </connections>
                 </viewController>

@@ -7,95 +7,51 @@
 
 import UIKit
 
+protocol TaskDetailsViewControllerDelegate: AnyObject {
+    func taskDetails(_ controller: TaskDetailsViewController, didCreateUpdate task: Task)
+}
+
 class TaskDetailsViewController: UIViewController {
     
-    @IBOutlet weak var titleTextField: UITextField!
-    @IBOutlet weak var descriptionTextField: UITextField!
-    @IBOutlet weak var statusButtonOutlet: UIButton!
+    weak var delegate: TaskDetailsViewControllerDelegate?
     
-    var users = [User]()
-    var userIndex = Int()
-    var taskIndex = Int()
-    var counter = 0
-    var status = "to do"
-    var titleField = ""
-    var choosenTableViewCell = Bool()
+    @IBOutlet private weak var titleTextField: UITextField!
+    @IBOutlet private weak var descriptionTextField: UITextField!
+    @IBOutlet private weak var statusButton: UIButton!
+    
+    var task = Task()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        users = UserDefaultsManager.shared.getValueForUser() ?? [User]()
-                titleTextField.text = titleField
-        if choosenTableViewCell {
-            titleTextField.text = users[userIndex].task?[taskIndex].title
-            descriptionTextField.text = users[userIndex].task?[taskIndex].description
-            
-            switch users[userIndex].task?[taskIndex].status {
-            case "in progress":
-                statusButtonOutlet.backgroundColor = .systemOrange
-                statusButtonOutlet.setTitle("in progress", for: .normal)
-            case "done":
-                statusButtonOutlet.backgroundColor = .systemRed
-                statusButtonOutlet.setTitle("done", for: .normal)
-            case "to do":
-                statusButtonOutlet.backgroundColor = .systemGreen
-                statusButtonOutlet.setTitle("to do", for: .normal)
-            default:
-                break
-            }
-        }
+        prepareUIElements()
     }
     
-    @IBAction func statusButton(_ sender: UIButton) {
-        if choosenTableViewCell == false {
-            counter += 1
-            switch counter {
-            case 1:
-                sender.backgroundColor = .systemOrange
-                sender.setTitle("in progress", for: .normal)
-                status = sender.currentTitle ?? ""
-            case 2:
-                sender.backgroundColor = .systemRed
-                sender.setTitle("done", for: .normal)
-                status = sender.currentTitle ?? ""
-            case 3:
-                sender.backgroundColor = .systemGreen
-                sender.setTitle("to do", for: .normal)
-                status = sender.currentTitle ?? ""
-                counter = 0
-            default:
-                break
-            }
-        } else {
-            var currentStatus = users[userIndex].task?[taskIndex].status
-            
-            switch currentStatus {
-            case "in progress":
-                currentStatus = "done"
-                sender.backgroundColor = .systemRed
-                sender.setTitle("done", for: .normal)
-                users[userIndex].task?[taskIndex].status = currentStatus!
-                UserDefaultsManager.shared.setValueForUser(value: users)
-            case "done":
-                currentStatus = "to do"
-                sender.backgroundColor = .systemGreen
-                sender.setTitle("to do", for: .normal)
-                users[userIndex].task?[taskIndex].status = currentStatus!
-                UserDefaultsManager.shared.setValueForUser(value: users)
-            case "to do":
-                currentStatus = "in progress"
-                sender.backgroundColor = .systemOrange
-                sender.setTitle("in progress", for: .normal)
-                users[userIndex].task?[taskIndex].status = currentStatus!
-                UserDefaultsManager.shared.setValueForUser(value: users)
-            default:
-                break
-            }
-        }
+    private func prepareUIElements() {
+        titleTextField.text = task.title
+        descriptionTextField.text = task.description
+        updateStatusUI(statusButton, task.status)
     }
     
-    @IBAction func submitButton(_ sender: UIButton) {
+    private func updateStatusUI(_ sender: UIButton, _ status: Task.Status) {
+        sender.setTitle(status.rawValue, for: .normal)
         
+        switch status {
+        case .inProgress:
+            sender.backgroundColor = .systemOrange
+        case .done:
+            sender.backgroundColor = .systemRed
+        case .todo:
+            sender.backgroundColor = .systemGreen
+        }
+    }
+    
+    @IBAction func changeStatusButton(_ sender: UIButton) {
+        task.status = task.status.nextState
+        updateStatusUI(statusButton, task.status)
+    }
+    
+    @IBAction func submitButton(_ sender: UIButton) {        
         if  titleTextField.text?.isEmpty == true {
             Alert.showBasic(
                 title: "Please enter title of task",
@@ -105,30 +61,13 @@ class TaskDetailsViewController: UIViewController {
                 title: "Please enter description of task",
                 vc: self)
         } else {
-            if choosenTableViewCell == false {
-                
-                let newTask = Task(title: titleTextField.text!,
-                                   description: descriptionTextField.text!,
-                                   deadline: "some date",
-                                   status: status)
-                print(newTask)
-                if users[userIndex].task == nil {
-                    users[userIndex] = User(login: users[userIndex].login,
-                                            password: users[userIndex].password,
-                                            task: [newTask])
-                } else {
-                    users[userIndex].task?.append(newTask)
-                }
-                print(users[userIndex].task as Any)
-                UserDefaultsManager.shared.setValueForUser(value: users)
-                navigationController?.popViewController(animated: true)
-                
-            } else {
-                users[userIndex].task?[taskIndex].title = titleTextField.text!
-                users[userIndex].task?[taskIndex].description = descriptionTextField.text!
-                UserDefaultsManager.shared.setValueForUser(value: users)
-                navigationController?.popViewController(animated: true)
-            }
+            let newTask = Task(title: titleTextField.text!,
+                               description: descriptionTextField.text!,
+                               deadline: Date(),
+                               status: task.status,
+                               id: task.id)
+            delegate?.taskDetails(TaskDetailsViewController(), didCreateUpdate: newTask)
+            navigationController?.popViewController(animated: true)
         }
     }
 }
