@@ -20,7 +20,6 @@ struct Task: Codable, Equatable {
         case done = "done"
         
         var nextState: Task.Status {
-            
             switch self {
             case .todo: return .inProgress
             case .inProgress: return .done

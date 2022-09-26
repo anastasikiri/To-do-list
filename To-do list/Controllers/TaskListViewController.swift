@@ -51,7 +51,7 @@ class TaskListViewController: UIViewController,
         tasksTableView.reloadData()
     }
     
-    private func sortedTasks() {
+    private func sortTasks() {
         tasks = tasks.sorted(by: { $0.status.rawValue > $1.status.rawValue })
     }
 }
@@ -87,7 +87,7 @@ extension TaskListViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: String(describing: TaskTableViewCell.self)) as? TaskTableViewCell
         else { fatalError() }
-        sortedTasks()
+        sortTasks()
         cell.configure(tasks[indexPath.row])
         cell.task = tasks[indexPath.row]
         cell.delegate = self
