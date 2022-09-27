@@ -29,7 +29,7 @@ class TaskTableViewCell: UITableViewCell {
     func configure(_ task: Task) {
         titleLabel.text = task.title
         descriptionLabel.text = task.description
-        deadlineLabel.text = task.deadline.formatDate(date: task.deadline)
+        deadlineLabel.text = task.deadline.formatDate()
         statusButton.setTitle(task.status.rawValue, for: .normal)
         
         switch task.status {

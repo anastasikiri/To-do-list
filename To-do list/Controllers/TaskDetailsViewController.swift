@@ -18,18 +18,33 @@ class TaskDetailsViewController: UIViewController {
     @IBOutlet private weak var titleTextField: UITextField!
     @IBOutlet private weak var descriptionTextField: UITextField!
     @IBOutlet private weak var statusButton: UIButton!
+    @IBOutlet private weak var dateTextField: UITextField!
     
     var task = Task()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         prepareUIElements()
+        
+        let datePicker = UIDatePicker()
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.addTarget(self,
+                             action: #selector(dateChange(datePicker:)),
+                             for: UIControl.Event.valueChanged)
+        datePicker.frame.size = CGSize(width: 0, height: 200)
+        dateTextField.inputView = datePicker
+        datePicker.date = task.deadline
+    }
+    
+    @objc func dateChange(datePicker: UIDatePicker) {
+        dateTextField.text = datePicker.date.formatDate()
     }
     
     private func prepareUIElements() {
         titleTextField.text = task.title
         descriptionTextField.text = task.description
+        dateTextField.text = task.deadline.formatDate()
         updateStatusUI(statusButton, task.status)
     }
     
@@ -51,7 +66,7 @@ class TaskDetailsViewController: UIViewController {
         updateStatusUI(statusButton, task.status)
     }
     
-    @IBAction func submitButton(_ sender: UIButton) {        
+    @IBAction func submitButton(_ sender: UIButton) {
         if  titleTextField.text?.isEmpty == true {
             Alert.showBasic(
                 title: "Please enter title of task",
@@ -63,7 +78,7 @@ class TaskDetailsViewController: UIViewController {
         } else {
             let newTask = Task(title: titleTextField.text!,
                                description: descriptionTextField.text!,
-                               deadline: Date(),
+                               deadline: (dateTextField.text?.getDate())!,
                                status: task.status,
                                id: task.id)
             delegate?.taskDetails(TaskDetailsViewController(), didCreateUpdate: newTask)
