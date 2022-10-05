@@ -8,6 +8,7 @@
 import Foundation
 
 extension String {
+    
     var isValidEmail : Bool {
         let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
@@ -15,8 +16,7 @@ extension String {
     }
     
     func getDate() -> Date? {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.date(from: self)
+        Date.formatter.dateFormat = "yyyy-MM-dd"
+        return Date.formatter.date(from: self)
     }
 }

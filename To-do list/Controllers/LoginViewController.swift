@@ -19,7 +19,7 @@ class LoginViewController: UIViewController {
         return nil
     }
     
-    private func valitadePass() -> String? {
+    private func validatePass() -> String? {
         if passwordTextField.text?.isEmpty == true {
             return "Please enter your password"
         }
@@ -28,17 +28,17 @@ class LoginViewController: UIViewController {
     
     @IBAction func signInButton(_ sender: UIButton) {        
         let loginMessage = validateEmail()
-        let passMessage = valitadePass()
+        let passMessage = validatePass()
         
         if loginMessage == nil && passMessage == nil {
             let taskListVC = TaskListViewController.loadFromStoryboard(type: TaskListViewController.self)
             self.navigationController?.pushViewController(taskListVC, animated: true)
         } else {
             var message = String()
-            if loginMessage != nil {
-                message = loginMessage!
-            } else {
-                message = passMessage!
+            if let loginMessage = loginMessage {
+                message = loginMessage
+            } else if let passMessage = passMessage {
+                message = passMessage
             }
             Alert.showBasic(title: message, vc: self)
         }
