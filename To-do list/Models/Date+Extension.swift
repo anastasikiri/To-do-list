@@ -9,9 +9,10 @@ import Foundation
 
 extension Date {
     
-    func formatDate (date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
+    static let formatter = DateFormatter()
+    
+    func formatDate() -> String {
+        Date.formatter.dateFormat = "yyyy-MM-dd"
+        return Date.formatter.string(from: self)
     }
 }

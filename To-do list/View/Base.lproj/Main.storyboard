@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="har-q5-K4t">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="har-q5-K4t">
     <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -166,7 +166,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O7l-qL-jKk">
-                                <rect key="frame" x="151.66666666666666" y="416" width="87" height="38"/>
+                                <rect key="frame" x="151.66666666666666" y="456" width="87" height="38"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Submit">
                                     <fontDescription key="titleFontDescription" type="system" pointSize="20"/>
@@ -209,26 +209,35 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gEl-sV-I8O">
+                                <rect key="frame" x="104" y="414" width="173" height="34"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="ca9-vp-Dzi"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="s0R-3c-4DY" firstAttribute="top" secondItem="IcG-0f-tWq" secondAttribute="bottom" constant="8" id="175-OP-D33"/>
+                            <constraint firstItem="ca9-vp-Dzi" firstAttribute="trailing" secondItem="gEl-sV-I8O" secondAttribute="trailing" constant="113" id="5ut-x4-4RU"/>
                             <constraint firstItem="Plt-Vn-ZNf" firstAttribute="top" secondItem="ca9-vp-Dzi" secondAttribute="top" constant="4" id="7ML-zM-xki"/>
                             <constraint firstItem="O7l-qL-jKk" firstAttribute="centerX" secondItem="ca9-vp-Dzi" secondAttribute="centerX" id="FwZ-Cr-qDv"/>
+                            <constraint firstItem="gEl-sV-I8O" firstAttribute="leading" secondItem="ca9-vp-Dzi" secondAttribute="leading" constant="104" id="GTg-8q-X5m"/>
                             <constraint firstItem="s0R-3c-4DY" firstAttribute="leading" secondItem="ca9-vp-Dzi" secondAttribute="leading" constant="20" id="Pkz-vh-zom"/>
                             <constraint firstItem="ca9-vp-Dzi" firstAttribute="trailing" secondItem="s0R-3c-4DY" secondAttribute="trailing" constant="20" id="XNL-vb-zgW"/>
                             <constraint firstItem="PvM-pW-Ybd" firstAttribute="centerY" secondItem="IcG-0f-tWq" secondAttribute="centerY" id="Xdt-Be-6bc"/>
-                            <constraint firstItem="O7l-qL-jKk" firstAttribute="top" secondItem="s0R-3c-4DY" secondAttribute="bottom" constant="20" id="blc-B1-vNI"/>
+                            <constraint firstItem="O7l-qL-jKk" firstAttribute="top" secondItem="s0R-3c-4DY" secondAttribute="bottom" constant="60" id="blc-B1-vNI"/>
                             <constraint firstItem="IcG-0f-tWq" firstAttribute="leading" secondItem="ca9-vp-Dzi" secondAttribute="leading" constant="20" id="g2r-NL-VWL"/>
                             <constraint firstItem="PvM-pW-Ybd" firstAttribute="leading" secondItem="IcG-0f-tWq" secondAttribute="trailing" constant="8" id="gjt-CX-Zos"/>
                             <constraint firstItem="IcG-0f-tWq" firstAttribute="top" secondItem="ca9-vp-Dzi" secondAttribute="top" constant="60" id="hPQ-Aa-1Ts"/>
                             <constraint firstItem="Plt-Vn-ZNf" firstAttribute="centerX" secondItem="ca9-vp-Dzi" secondAttribute="centerX" id="it4-uC-FYu"/>
+                            <constraint firstItem="gEl-sV-I8O" firstAttribute="top" secondItem="s0R-3c-4DY" secondAttribute="bottom" constant="18" id="qzq-Fc-pg6"/>
                             <constraint firstItem="ca9-vp-Dzi" firstAttribute="trailing" secondItem="PvM-pW-Ybd" secondAttribute="trailing" constant="20" id="zqG-Av-Xye"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="sUD-Sq-ZeS"/>
                     <connections>
+                        <outlet property="dateTextField" destination="gEl-sV-I8O" id="HW0-4m-O6q"/>
                         <outlet property="descriptionTextField" destination="s0R-3c-4DY" id="b51-X6-dDi"/>
                         <outlet property="statusButton" destination="PvM-pW-Ybd" id="IXw-yf-exT"/>
                         <outlet property="titleTextField" destination="IcG-0f-tWq" id="fbJ-Fv-rCX"/>
