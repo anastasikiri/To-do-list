@@ -9,8 +9,8 @@ import Foundation
 
 struct Task: Codable, Equatable {
     var title: String = ""
-    var description: String = ""
-    var deadline: Date = .now
+    var content: String = ""
+    var deadline: String = ""
     var status: Status = .todo
     var id: Int = 0
     
@@ -24,6 +24,14 @@ struct Task: Codable, Equatable {
             case .todo: return .inProgress
             case .inProgress: return .done
             case .done: return .todo
+            }
+        }
+        
+        var backState: Task.Status {
+            switch self {
+            case .todo: return .done
+            case .inProgress: return .todo
+            case .done: return .inProgress
             }
         }
     }

@@ -16,7 +16,7 @@ extension String {
     }
     
     func getDate() -> Date? {
-        Date.formatter.dateFormat = "yyyy-MM-dd"
+        Date.formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return Date.formatter.date(from: self)
     }
 }

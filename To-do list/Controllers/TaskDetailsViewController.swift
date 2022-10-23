@@ -7,16 +7,10 @@
 
 import UIKit
 
-protocol TaskDetailsViewControllerDelegate: AnyObject {
-    func taskDetails(_ controller: TaskDetailsViewController, didCreateUpdate task: Task)
-}
-
 class TaskDetailsViewController: UIViewController {
     
-    weak var delegate: TaskDetailsViewControllerDelegate?
-    
     @IBOutlet private weak var titleTextField: UITextField!
-    @IBOutlet private weak var descriptionTextField: UITextField!
+    @IBOutlet private weak var contentTextField: UITextField!
     @IBOutlet private weak var statusButton: UIButton!
     @IBOutlet private weak var dateTextField: UITextField!
     
@@ -25,17 +19,17 @@ class TaskDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareUIElements()
-        configureUIDatePicker()
+        configureUIDatePicker()        
     }
     
     @objc func dateChange(datePicker: UIDatePicker) {
-        dateTextField.text = datePicker.date.formatDate()
+        dateTextField.text = String(datePicker.date.formatDate().dropLast(3))
     }
     
     private func prepareUIElements() {
         titleTextField.text = task.title
-        descriptionTextField.text = task.description
-        dateTextField.text = task.deadline.formatDate()
+        contentTextField.text = task.content
+        dateTextField.text = String(task.deadline.dropLast(3))
         updateStatusUI(statusButton, task.status)
     }
     
@@ -54,16 +48,32 @@ class TaskDetailsViewController: UIViewController {
     
     private func configureUIDatePicker() {
         let width = 0
-        let height = 200
+        let height = 430
         let datePicker = UIDatePicker()
-        datePicker.datePickerMode = .date
-        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.datePickerMode = .dateAndTime
+        datePicker.preferredDatePickerStyle = .inline
         datePicker.addTarget(self,
                              action: #selector(dateChange(datePicker:)),
                              for: UIControl.Event.valueChanged)
         datePicker.frame.size = CGSize(width: width, height: height)
         dateTextField.inputView = datePicker
-        datePicker.date = task.deadline
+        datePicker.date = task.deadline.getDate() ?? .now
+    }
+    
+    private func validateDataInput() -> Bool {
+        if  titleTextField.text?.isEmpty == true {
+            Alert.showBasic(
+                title: "Please enter title of task",
+                vc: self)
+            return false
+        } else if contentTextField.text?.isEmpty == true {
+            Alert.showBasic(
+                title: "Please enter description of task",
+                vc: self)
+            return false
+        } else {
+            return true
+        }
     }
     
     @IBAction func changeStatusButton(_ sender: UIButton) {
@@ -72,22 +82,64 @@ class TaskDetailsViewController: UIViewController {
     }
     
     @IBAction func submitButton(_ sender: UIButton) {
-        if  titleTextField.text?.isEmpty == true {
-            Alert.showBasic(
-                title: "Please enter title of task",
-                vc: self)
-        } else if descriptionTextField.text?.isEmpty == true {
-            Alert.showBasic(
-                title: "Please enter description of task",
-                vc: self)
-        } else {
-            let newTask = Task(title: titleTextField.text ?? "",
-                               description: descriptionTextField.text ?? "",
-                               deadline: dateTextField.text?.getDate() ?? Date(),
-                               status: task.status,
-                               id: task.id)
-            delegate?.taskDetails(TaskDetailsViewController(), didCreateUpdate: newTask)
-            navigationController?.popViewController(animated: true)
+        
+        if validateDataInput() {
+            let title = titleTextField.text ?? ""
+            let content = contentTextField.text ?? ""
+            let deadline = dateTextField.text ?? ""
+            let status = statusButton.titleLabel?.text
+            
+            if task.id == 0 {
+                let query = "task"
+                APICaller.shared.executePostRequest(with: query,
+                                                    params: ["title" : title,
+                                                             "content": content,
+                                                             "deadline": deadline,
+                                                             "status": status as Any],
+                                                    completion: { result, error  in
+                    var message = String()
+                    
+                    if error != nil {
+                        message = "Something went wrong. Please try again."
+                    } else {
+                        if let status = result?["status"], status as! String == "ok" {
+                            message = "Task added successfully"
+                            DispatchQueue.main.async {
+                                self.navigationController?.popViewController(animated: true)
+                            }
+                        }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        Alert.showBasicWithTimer(title: message, vc: self)
+                    }
+                    
+                })
+            } else {
+                let query = "task/update"
+                APICaller.shared.executePostRequest(with: query,
+                                                    params: ["id" : "\(task.id)",
+                                                             "title" : title,
+                                                             "content": content,
+                                                             "deadline": deadline,
+                                                             "status": status as Any],
+                                                    completion: { result, error  in
+                    var message = String()
+                    if error != nil {
+                        message = "Something went wrong. Please try again."
+                        
+                    } else {
+                        if let status = result?["status"], status as! String == "ok" {
+                            message = "Task edited successfully"
+                            DispatchQueue.main.async {
+                                self.navigationController?.popViewController(animated: true)
+                            }
+                        }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        Alert.showBasicWithTimer(title: message, vc: self)
+                    }
+                })
+            }
         }
     }
 }
