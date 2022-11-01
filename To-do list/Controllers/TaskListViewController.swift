@@ -10,7 +10,9 @@ import UIKit
 class TaskListViewController: UIViewController,
                               TaskTableViewCellDelegate{
     
-    private var tasks = [Task]()
+    var tasks = [Task]()
+
+    private let taskApiHelper = TaskApiHelper()
     
     @IBOutlet weak var tasksTableView: UITableView!
     
@@ -25,15 +27,13 @@ class TaskListViewController: UIViewController,
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        APICaller.shared.executeGetRequest(with: "task/all") { [self] result, error in
+        taskApiHelper.executeTaskList { result in
             if let result = result {
                 self.tasks = result
-                
-                DispatchQueue.main.async {
-                    self.tasksTableView.reloadData()
-                }
+                self.tasksTableView.reloadData()
             }
         }
+
     }
     
     @IBAction func addButton(_ sender: UIButton) {
@@ -51,26 +51,22 @@ class TaskListViewController: UIViewController,
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks[index].status = tasks[index].status.nextState
             
-            let query = "task/update"
-            APICaller.shared.executePostRequest(with: query,
-                                                params: ["id" : "\(task.id)",
-                                                         "status": tasks[index].status.rawValue],
-                                                completion: { result, error  in
-                
-                if error != nil {
-                    DispatchQueue.main.async {
-                        Alert.showBasicWithTimer(title: "Something went wrong. Please try again.",
-                                                 vc: self)
-                        self.tasks[index].status = self.tasks[index].status.backState
+            taskApiHelper.editStatusTask(id: "\(task.id)", status: tasks[index].status.rawValue) { result in
+                var message = String()
+                if let result = result {
+                    if result.status == "ok" {
+                        self.tasksTableView.reloadData()
+                    } else {
+                        message = "Session expired"
                     }
                 } else {
-                    if let status = result?["status"], status as! String == "ok" {
-                        DispatchQueue.main.async {
-                            self.tasksTableView.reloadData()
-                        }
-                    }
+                    message = "Something went wrong. Please try again."
+                    self.tasks[index].status = self.tasks[index].status.backState
                 }
-            })
+                if !message.isEmpty {
+                    Alert.showBasicWithTimer(title: message, vc: self)
+                }
+            }
         }
     }
     
@@ -103,30 +99,25 @@ extension TaskListViewController: UITableViewDelegate {
                    forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             
-            let query = "task/delete"
-            APICaller.shared.executePostRequest(with: query,
-                                                params: ["id" : "\(tasks[indexPath.row].id)"],
-                                                completion: { result, error  in
+            taskApiHelper.deleteTask(id: "\(tasks[indexPath.row].id)") { result in
                 var message = String()
-                
-                if error != nil {
-                    message = "Something went wrong. Please try again."
-                } else {
-                    if let status = result?["status"], status as! String == "ok" {
+                if let result = result {
+                    if result.status == "ok"  {
                         message = "Task deleted"
-                        DispatchQueue.main.async {
-                            self.tasks.remove(at: indexPath.row)
-                            tableView.deleteRows(at: [indexPath], with: .fade)
-                        }
+                        self.tasks.remove(at: indexPath.row)
+                        tableView.deleteRows(at: [indexPath], with: .fade)
+                    } else {
+                        message = "Session expired"
                     }
+                } else {
+                    message = "Something went wrong. Please try again."
                 }
-                DispatchQueue.main.async {
-                    Alert.showBasicWithTimer(title: message, vc: self)
-                }
-            })
+                Alert.showBasicWithTimer(title: message, vc: self)
+            }
         }
     }
 }
+
 
 extension TaskListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

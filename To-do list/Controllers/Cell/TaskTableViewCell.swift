@@ -29,7 +29,8 @@ class TaskTableViewCell: UITableViewCell {
     func configure(_ task: Task) {
         titleLabel.text = task.title
         contentLabel.text = task.content
-        deadlineLabel.text = String(task.deadline.dropLast(3))
+        deadlineLabel.text = task.deadline.convertToDateFormat(current: "yyyy-MM-dd HH:mm:ss",
+                                                               convertTo: "yyyy-MM-dd HH:mm")
         statusButton.setTitle(task.status.rawValue, for: .normal)
         
         switch task.status {

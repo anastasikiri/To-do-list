@@ -15,6 +15,7 @@ class TaskDetailsViewController: UIViewController {
     @IBOutlet private weak var dateTextField: UITextField!
     
     var task = Task()
+    private let taskApiHelper = TaskApiHelper()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,13 +24,14 @@ class TaskDetailsViewController: UIViewController {
     }
     
     @objc func dateChange(datePicker: UIDatePicker) {
-        dateTextField.text = String(datePicker.date.formatDate().dropLast(3))
+        dateTextField.text = String(datePicker.date.formatDate())
     }
     
     private func prepareUIElements() {
         titleTextField.text = task.title
         contentTextField.text = task.content
-        dateTextField.text = String(task.deadline.dropLast(3))
+        dateTextField.text = task.deadline.convertToDateFormat(current: "yyyy-MM-dd HH:mm:ss",
+                                                               convertTo: "yyyy-MM-dd HH:mm")
         updateStatusUI(statusButton, task.status)
     }
     
@@ -84,61 +86,55 @@ class TaskDetailsViewController: UIViewController {
     @IBAction func submitButton(_ sender: UIButton) {
         
         if validateDataInput() {
-            let title = titleTextField.text ?? ""
-            let content = contentTextField.text ?? ""
-            let deadline = dateTextField.text ?? ""
-            let status = statusButton.titleLabel?.text
+            guard let title = titleTextField.text ,
+            let content = contentTextField.text ,
+            let deadline = dateTextField.text ,
+            let status = statusButton.titleLabel?.text else {return}
             
             if task.id == 0 {
-                let query = "task"
-                APICaller.shared.executePostRequest(with: query,
-                                                    params: ["title" : title,
-                                                             "content": content,
-                                                             "deadline": deadline,
-                                                             "status": status as Any],
-                                                    completion: { result, error  in
+                taskApiHelper.addTask(title: title,
+                                      content: content,
+                                      deadline: deadline,
+                                      status: status) { result in
                     var message = String()
-                    
-                    if error != nil {
-                        message = "Something went wrong. Please try again."
-                    } else {
-                        if let status = result?["status"], status as! String == "ok" {
+                    if let result = result {
+                        if result.status == "ok"  {
                             message = "Task added successfully"
-                            DispatchQueue.main.async {
-                                self.navigationController?.popViewController(animated: true)
-                            }
+                            self.navigationController?.popViewController(animated: true)
+                        } else {
+                            message = "Session expired"
                         }
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        Alert.showBasicWithTimer(title: message, vc: self)
-                    }
-                    
-                })
-            } else {
-                let query = "task/update"
-                APICaller.shared.executePostRequest(with: query,
-                                                    params: ["id" : "\(task.id)",
-                                                             "title" : title,
-                                                             "content": content,
-                                                             "deadline": deadline,
-                                                             "status": status as Any],
-                                                    completion: { result, error  in
-                    var message = String()
-                    if error != nil {
-                        message = "Something went wrong. Please try again."
-                        
                     } else {
-                        if let status = result?["status"], status as! String == "ok" {
-                            message = "Task edited successfully"
-                            DispatchQueue.main.async {
-                                self.navigationController?.popViewController(animated: true)
-                            }
-                        }
+                        message = "Something went wrong. Please try again."
                     }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
                         Alert.showBasicWithTimer(title: message, vc: self)
                     }
-                })
+                }
+            } else {
+                
+                taskApiHelper.editTask(id: "\(task.id)",
+                                         title: title,
+                                         content: content,
+                                         deadline: deadline,
+                                         status: status) { result
+                    
+                    in
+                    var message = String()
+                    if let result = result {
+                        if result.status == "ok" {
+                            message = "Task edited successfully"
+                            self.navigationController?.popViewController(animated: true)
+                        } else {
+                            message = "Session expired"
+                        }
+                    } else {
+                        message = "Something went wrong. Please try again."
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
+                        Alert.showBasicWithTimer(title: message, vc: self)
+                    }
+                }
             }
         }
     }

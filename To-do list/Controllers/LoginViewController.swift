@@ -7,10 +7,13 @@
 
 import UIKit
 
+
 class LoginViewController: UIViewController {
     
     @IBOutlet weak var loginTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    
+    private let authApiHelper = AuthApiHelper()
     
     private func validateEmail() -> String? {
         if loginTextField.text?.isEmpty == true || loginTextField.text?.isValidEmail == false {
@@ -49,63 +52,48 @@ class LoginViewController: UIViewController {
     
     @IBAction func signInButton(_ sender: UIButton) {
         if validateCredentials() {
-            let email = loginTextField.text ?? ""
-            let password = passwordTextField.text ?? ""
-            let query = "auth"
+            guard let email = loginTextField.text,
+                  let password = passwordTextField.text else {return}
             
-            APICaller.shared.executePostRequest(with: query,
-                                                params: ["email" : email,
-                                                         "password": password],
-                                                completion: { result, error  in
+            authApiHelper.executeLoginRequest(email: email, password: password) { result in
                 var message = String()
-                
-                if error != nil {
-                    message = "Something went wrong. Please try again."
-                } else {
-                    if result?["token"] != nil {
-                        APICaller.token = result?["token"] as! String
-                        DispatchQueue.main.async {
+                if let result = result {
+                    if result.token != nil {
+                        APIHelper.token = result.token!
                             let taskListVC = TaskListViewController.loadFromStoryboard(type: TaskListViewController.self)
-                            self.navigationController?.pushViewController(taskListVC, animated: true)
-                        }
+                        self.navigationController?.pushViewController(taskListVC,
+                                                                           animated: true)
                     } else {
                         message = "User doesn't exist with provided email and passsword"
                     }
+                } else {
+                    message = "Something went wrong. Please try again."
                 }
                 if !message.isEmpty {
-                    DispatchQueue.main.async {
-                        Alert.showBasic(title: message, vc: self)
-                    }
+                    Alert.showBasic(title: message, vc: self)
                 }
-            })
+            }
         }
     }
     
     @IBAction func registerButton(_ sender: UIButton) {
         if validateCredentials() {
-            let email = loginTextField.text ?? ""
-            let password = passwordTextField.text ?? ""
-            let query = "register"
+            guard let email = loginTextField.text,
+                  let password = passwordTextField.text else {return}
             
-            APICaller.shared.executePostRequest(with: query,
-                                                params: ["email" : email,
-                                                         "password": password],
-                                                completion: { result, error  in
+            authApiHelper.executeRegisterRequest(email: email, password: password) { result in
                 var message = String()
-                
-                if error != nil {
-                    message = "Something went wrong. Please try again."
-                } else {
-                    if let status = result?["status"], status as! String == "ok" {
+                if let result = result {
+                    if result.status == "ok"{
                         message = "Registration successfull"
                     } else {
                         message = "This email alredy exist"
                     }
+                } else {
+                    message = "Something went wrong. Please try again."
                 }
-                DispatchQueue.main.async {
-                    Alert.showBasic(title: message, vc: self)
-                }
-            })
+                Alert.showBasic(title: message, vc: self)
+            }
         }
     }
 }
