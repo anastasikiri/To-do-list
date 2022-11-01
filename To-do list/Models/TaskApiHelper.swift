@@ -9,9 +9,9 @@ import Foundation
 
 final class TaskApiHelper {
     
-    let apiHelper = APIHelper()
+    private let apiHelper = APIHelper()
     
-    enum TaskMethod {
+    private enum TaskMethod {
         case allTask
         case addTask
         case editTask
@@ -42,10 +42,11 @@ final class TaskApiHelper {
                  deadline: String,
                  status: String,
                  completion: @escaping (TaskResponse?) -> Void){
-        apiHelper.createPostRequest(query: TaskMethod.addTask.path, params: ["title" : title,
-                                                                             "content": content,
-                                                                             "deadline": deadline,
-                                                                             "status": status], completion: completion)
+        apiHelper.createPostRequest(query: TaskMethod.addTask.path,
+                                    params: ["title" : title,
+                                             "content": content,
+                                             "deadline": deadline,
+                                             "status": status], completion: completion)
     }
     
     func editTask( id: String,
@@ -54,17 +55,19 @@ final class TaskApiHelper {
                    deadline: String,
                    status: String,
                    completion: @escaping (TaskResponse?) -> Void){
-        apiHelper.createPostRequest(query: TaskMethod.editTask.path, params: [ "id":id,
-                                                                               "title" : title,
-                                                                               "content": content,
-                                                                               "deadline": deadline,
-                                                                               "status": status], completion: completion)
+        apiHelper.createPostRequest(query: TaskMethod.editTask.path,
+                                    params: [ "id":id,
+                                              "title" : title,
+                                              "content": content,
+                                              "deadline": deadline,
+                                              "status": status], completion: completion)
     }
     
     func editStatusTask( id: String,
                          status: String,
                          completion: @escaping (TaskResponse?) -> Void){
-        apiHelper.createPostRequest(query: TaskMethod.editTask.path, params: [ "id":id,
-                                                                               "status": status], completion: completion)
+        apiHelper.createPostRequest(query: TaskMethod.editTask.path,
+                                    params: [ "id":id,
+                                              "status": status], completion: completion)
     }
 }

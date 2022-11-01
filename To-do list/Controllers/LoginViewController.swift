@@ -14,7 +14,7 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     
     private let authApiHelper = AuthApiHelper()
-    
+    var message = String()
     private func validateEmail() -> String? {
         if loginTextField.text?.isEmpty == true || loginTextField.text?.isValidEmail == false {
             return "Please enter correct email"
@@ -30,7 +30,7 @@ class LoginViewController: UIViewController {
             return "Password must have at least 8 characters"
         }
         return nil
-    }    
+    }
     
     private func validateCredentials() -> Bool {
         let loginMessage = validateEmail()
@@ -52,22 +52,27 @@ class LoginViewController: UIViewController {
     
     @IBAction func signInButton(_ sender: UIButton) {
         if validateCredentials() {
-            guard let email = loginTextField.text,
-                  let password = passwordTextField.text else {return}
+            guard
+                let email = loginTextField.text,
+                let password = passwordTextField.text
+            else {return}
             
-            authApiHelper.executeLoginRequest(email: email, password: password) { result in
+            authApiHelper.executeLoginRequest(email: email, password: password) {[weak self] result in
+                guard let self = self else {
+                    return
+                }
                 var message = String()
                 if let result = result {
                     if result.token != nil {
                         APIHelper.token = result.token!
-                            let taskListVC = TaskListViewController.loadFromStoryboard(type: TaskListViewController.self)
+                        let taskListVC = TaskListViewController.loadFromStoryboard(type: TaskListViewController.self)
                         self.navigationController?.pushViewController(taskListVC,
-                                                                           animated: true)
+                                                                      animated: true)
                     } else {
-                        message = "User doesn't exist with provided email and passsword"
+                        message = APIHelper.ErrorAPI.loginError.description
                     }
                 } else {
-                    message = "Something went wrong. Please try again."
+                    message = APIHelper.ErrorAPI.networkError.description
                 }
                 if !message.isEmpty {
                     Alert.showBasic(title: message, vc: self)
@@ -78,19 +83,24 @@ class LoginViewController: UIViewController {
     
     @IBAction func registerButton(_ sender: UIButton) {
         if validateCredentials() {
-            guard let email = loginTextField.text,
-                  let password = passwordTextField.text else {return}
+            guard
+                let email = loginTextField.text,
+                let password = passwordTextField.text
+            else {return}
             
-            authApiHelper.executeRegisterRequest(email: email, password: password) { result in
+            authApiHelper.executeRegisterRequest(email: email, password: password) {[weak self] result in
+                guard let self = self else {
+                    return
+                }
                 var message = String()
                 if let result = result {
                     if result.status == "ok"{
                         message = "Registration successfull"
                     } else {
-                        message = "This email alredy exist"
+                        message = APIHelper.ErrorAPI.registerError.description
                     }
                 } else {
-                    message = "Something went wrong. Please try again."
+                    message = APIHelper.ErrorAPI.networkError.description
                 }
                 Alert.showBasic(title: message, vc: self)
             }

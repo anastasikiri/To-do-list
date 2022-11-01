@@ -9,7 +9,7 @@ import Foundation
 
 final class AuthApiHelper {
     
-    enum AuthMethod {
+    private enum AuthMethod {
         case login
         case register
         var path: String {
@@ -23,7 +23,7 @@ final class AuthApiHelper {
         }
     }
     
-    let apiHelper = APIHelper()
+    private let apiHelper = APIHelper()
     
     func executeLoginRequest (email: String,
                               password: String,

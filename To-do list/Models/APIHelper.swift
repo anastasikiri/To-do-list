@@ -9,6 +9,26 @@ import Foundation
 
 class APIHelper {
     
+    enum ErrorAPI {
+        case networkError
+        case loginError
+        case registerError
+        case otherError
+        
+        var description: String {
+            switch self {
+            case .networkError:
+                return "Something went wrong. Please try again."
+            case .loginError:
+                return  "User doesn't exist with provided email and passsword."
+            case .registerError:
+                return "This email alredy exist."
+            case .otherError:
+                return "Session expired.Please try again."
+            }
+        }
+    }
+    
     private let baseURL = URL(string: "https://education.octodev.net/api/v1")
     static var token = ""
     
@@ -21,9 +41,9 @@ class APIHelper {
     }
     
     func createPostRequest<T:Codable>(query: String,
-                                       params: [String: Any],
-                                       isUsedToken: Bool = true,
-                                       completion: @escaping (T?) -> Void) {
+                                      params: [String: Any],
+                                      isUsedToken: Bool = true,
+                                      completion: @escaping (T?) -> Void) {
         guard let request = configUrlRequest(query: query,
                                              bodyParams: params,
                                              httpMethod: "POST",
@@ -32,7 +52,7 @@ class APIHelper {
     }
     
     func createGetRequest<T:Codable>(query: String,
-                                      completion: @escaping (T?) -> Void) {
+                                     completion: @escaping (T?) -> Void) {
         guard let request = configUrlRequest(query: query) else { return }
         fetchRequest(with: request, completion: completion)
     }

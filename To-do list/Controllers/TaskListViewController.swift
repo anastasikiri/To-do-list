@@ -11,7 +11,7 @@ class TaskListViewController: UIViewController,
                               TaskTableViewCellDelegate{
     
     var tasks = [Task]()
-
+    
     private let taskApiHelper = TaskApiHelper()
     
     @IBOutlet weak var tasksTableView: UITableView!
@@ -27,13 +27,16 @@ class TaskListViewController: UIViewController,
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        taskApiHelper.executeTaskList { result in
+        taskApiHelper.executeTaskList { [weak self] result in
+            guard let self = self else {
+                return
+            }
             if let result = result {
                 self.tasks = result
                 self.tasksTableView.reloadData()
             }
         }
-
+        
     }
     
     @IBAction func addButton(_ sender: UIButton) {
@@ -51,16 +54,19 @@ class TaskListViewController: UIViewController,
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks[index].status = tasks[index].status.nextState
             
-            taskApiHelper.editStatusTask(id: "\(task.id)", status: tasks[index].status.rawValue) { result in
+            taskApiHelper.editStatusTask(id: "\(task.id)", status: tasks[index].status.rawValue) {[weak self] result in
+                guard let self = self else {
+                    return
+                }
                 var message = String()
                 if let result = result {
                     if result.status == "ok" {
                         self.tasksTableView.reloadData()
                     } else {
-                        message = "Session expired"
+                        message = APIHelper.ErrorAPI.otherError.description
                     }
                 } else {
-                    message = "Something went wrong. Please try again."
+                    message = APIHelper.ErrorAPI.networkError.description
                     self.tasks[index].status = self.tasks[index].status.backState
                 }
                 if !message.isEmpty {
@@ -70,7 +76,7 @@ class TaskListViewController: UIViewController,
         }
     }
     
-    func taskDetails(_ controller: TaskDetailsViewController, didCreateUpdate task: Task) {
+    private func taskDetails(_ controller: TaskDetailsViewController, didCreateUpdate task: Task) {
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks[index] = task
         } else {
@@ -99,7 +105,10 @@ extension TaskListViewController: UITableViewDelegate {
                    forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             
-            taskApiHelper.deleteTask(id: "\(tasks[indexPath.row].id)") { result in
+            taskApiHelper.deleteTask(id: "\(tasks[indexPath.row].id)") {[weak self] result in
+                guard let self = self else {
+                    return
+                }
                 var message = String()
                 if let result = result {
                     if result.status == "ok"  {
@@ -107,10 +116,10 @@ extension TaskListViewController: UITableViewDelegate {
                         self.tasks.remove(at: indexPath.row)
                         tableView.deleteRows(at: [indexPath], with: .fade)
                     } else {
-                        message = "Session expired"
+                        message = APIHelper.ErrorAPI.otherError.description
                     }
                 } else {
-                    message = "Something went wrong. Please try again."
+                    message = APIHelper.ErrorAPI.networkError.description
                 }
                 Alert.showBasicWithTimer(title: message, vc: self)
             }

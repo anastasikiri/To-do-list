@@ -20,7 +20,7 @@ class TaskDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareUIElements()
-        configureUIDatePicker()        
+        configureUIDatePicker()
     }
     
     @objc func dateChange(datePicker: UIDatePicker) {
@@ -86,50 +86,55 @@ class TaskDetailsViewController: UIViewController {
     @IBAction func submitButton(_ sender: UIButton) {
         
         if validateDataInput() {
-            guard let title = titleTextField.text ,
-            let content = contentTextField.text ,
-            let deadline = dateTextField.text ,
-            let status = statusButton.titleLabel?.text else {return}
+            guard
+                let title = titleTextField.text ,
+                let content = contentTextField.text ,
+                let deadline = dateTextField.text ,
+                let status = statusButton.titleLabel?.text
+            else {return}
             
             if task.id == 0 {
                 taskApiHelper.addTask(title: title,
                                       content: content,
                                       deadline: deadline,
-                                      status: status) { result in
+                                      status: status) { [weak self] result in
+                    guard let self = self else {
+                        return
+                    }
                     var message = String()
                     if let result = result {
                         if result.status == "ok"  {
                             message = "Task added successfully"
                             self.navigationController?.popViewController(animated: true)
                         } else {
-                            message = "Session expired"
+                            message = APIHelper.ErrorAPI.otherError.description
                         }
                     } else {
-                        message = "Something went wrong. Please try again."
+                        message = APIHelper.ErrorAPI.networkError.description
                     }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
                         Alert.showBasicWithTimer(title: message, vc: self)
                     }
                 }
             } else {
-                
                 taskApiHelper.editTask(id: "\(task.id)",
-                                         title: title,
-                                         content: content,
-                                         deadline: deadline,
-                                         status: status) { result
-                    
-                    in
+                                       title: title,
+                                       content: content,
+                                       deadline: deadline,
+                                       status: status) { [weak self] result in
+                    guard let self = self else {
+                        return
+                    }
                     var message = String()
                     if let result = result {
                         if result.status == "ok" {
                             message = "Task edited successfully"
                             self.navigationController?.popViewController(animated: true)
                         } else {
-                            message = "Session expired"
+                            message = APIHelper.ErrorAPI.otherError.description
                         }
                     } else {
-                        message = "Something went wrong. Please try again."
+                        message = APIHelper.ErrorAPI.networkError.description
                     }
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
                         Alert.showBasicWithTimer(title: message, vc: self)
