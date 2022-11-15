@@ -27,7 +27,8 @@ final class AuthApiHelper {
     
     func executeLoginRequest (email: String,
                               password: String,
-                              completion: @escaping (LoginResponse?) -> Void ) {
+                              completion: @escaping (Result <LoginResponse,
+                                                     APIHelper.ErrorAPI>) -> Void ) {
         apiHelper.createPostRequest(query: AuthMethod.login.path,
                                     params: ["email": email, "password": password],
                                     isUsedToken: AuthMethod.login.isUsedToken,
@@ -36,7 +37,8 @@ final class AuthApiHelper {
     
     func executeRegisterRequest (email: String,
                                  password: String,
-                                 completion: @escaping (NetworkResponse?) -> Void ) {
+                                 completion: @escaping (Result <NetworkResponse,
+                                                        APIHelper.ErrorAPI>) -> Void ) {
         apiHelper.createPostRequest(query: AuthMethod.register.path,
                                     params: ["email": email, "password": password],
                                     isUsedToken: false,

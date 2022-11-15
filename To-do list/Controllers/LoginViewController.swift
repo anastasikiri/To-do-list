@@ -15,6 +15,7 @@ class LoginViewController: UIViewController {
     
     private let authApiHelper = AuthApiHelper()
     var message = String()
+    
     private func validateEmail() -> String? {
         if loginTextField.text?.isEmpty == true || loginTextField.text?.isValidEmail == false {
             return "Please enter correct email"
@@ -43,7 +44,7 @@ class LoginViewController: UIViewController {
             } else if let passMessage = passMessage {
                 message = passMessage
             }
-            Alert.showBasic(title: message, vc: self)
+            LoginViewController.showBasicAlert(title: message, vc: self)
             return false
         } else {
             return true
@@ -51,59 +52,52 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func signInButton(_ sender: UIButton) {
-        if validateCredentials() {
-            guard
-                let email = loginTextField.text,
-                let password = passwordTextField.text
-            else {return}
+        guard
+            validateCredentials(),
+            let email = loginTextField.text,
+            let password = passwordTextField.text
+        else { return }
+        
+        authApiHelper.executeLoginRequest(email: email, password: password) { [weak self] result in
+            guard let self = self else { return }
+            var message = String()
             
-            authApiHelper.executeLoginRequest(email: email, password: password) {[weak self] result in
-                guard let self = self else {
-                    return
-                }
-                var message = String()
-                if let result = result {
-                    if result.token != nil {
-                        APIHelper.token = result.token!
-                        let taskListVC = TaskListViewController.loadFromStoryboard(type: TaskListViewController.self)
-                        self.navigationController?.pushViewController(taskListVC,
-                                                                      animated: true)
-                    } else {
-                        message = APIHelper.ErrorAPI.loginError.description
-                    }
+            switch result {
+            case .success(let result):
+                if let token = result.token {
+                    APIHelper.token = token
+                    let taskListVC = TaskListViewController.loadFromStoryboard(type: TaskListViewController.self)
+                    self.navigationController?.pushViewController(taskListVC, animated: true)
                 } else {
-                    message = APIHelper.ErrorAPI.networkError.description
+                    message = "Something went wrong"
                 }
-                if !message.isEmpty {
-                    Alert.showBasic(title: message, vc: self)
-                }
+            case .failure(let error):
+                message = self.changeErrorMessage(with: error)
+            }
+            
+            if !message.isEmpty {
+                LoginViewController.showBasicAlert(title: message, vc: self)
             }
         }
     }
     
     @IBAction func registerButton(_ sender: UIButton) {
-        if validateCredentials() {
-            guard
-                let email = loginTextField.text,
-                let password = passwordTextField.text
-            else {return}
-            
-            authApiHelper.executeRegisterRequest(email: email, password: password) {[weak self] result in
-                guard let self = self else {
-                    return
-                }
-                var message = String()
-                if let result = result {
-                    if result.status == "ok"{
-                        message = "Registration successfull"
-                    } else {
-                        message = APIHelper.ErrorAPI.registerError.description
-                    }
-                } else {
-                    message = APIHelper.ErrorAPI.networkError.description
-                }
-                Alert.showBasic(title: message, vc: self)
+        guard
+            validateCredentials(),
+            let email = loginTextField.text,
+            let password = passwordTextField.text
+        else { return }
+        
+        authApiHelper.executeRegisterRequest(email: email, password: password) { [weak self] result in
+            guard let self = self else { return }
+            var message = String()
+            switch result {
+            case .success:
+                message = "Registration successfull"
+            case .failure(let error):
+                message = self.changeErrorMessage(with: error) 
             }
+            LoginViewController.showBasicAlert(title: message, vc: self)
         }
     }
 }

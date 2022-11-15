@@ -9,24 +9,10 @@ import Foundation
 
 class APIHelper {
     
-    enum ErrorAPI {
-        case networkError
-        case loginError
-        case registerError
-        case otherError
-        
-        var description: String {
-            switch self {
-            case .networkError:
-                return "Something went wrong. Please try again."
-            case .loginError:
-                return  "User doesn't exist with provided email and passsword."
-            case .registerError:
-                return "This email alredy exist."
-            case .otherError:
-                return "Session expired.Please try again."
-            }
-        }
+    enum ErrorAPI: Error {
+        case badRequest(String)
+        case unauthorized(String)
+        case others(String)
     }
     
     private let baseURL = URL(string: "https://education.octodev.net/api/v1")
@@ -43,7 +29,7 @@ class APIHelper {
     func createPostRequest<T:Codable>(query: String,
                                       params: [String: Any],
                                       isUsedToken: Bool = true,
-                                      completion: @escaping (T?) -> Void) {
+                                      completion: @escaping (Result <T, ErrorAPI>) -> Void) {
         guard let request = configUrlRequest(query: query,
                                              bodyParams: params,
                                              httpMethod: "POST",
@@ -52,7 +38,7 @@ class APIHelper {
     }
     
     func createGetRequest<T:Codable>(query: String,
-                                     completion: @escaping (T?) -> Void) {
+                                     completion: @escaping (Result <T, ErrorAPI>) -> Void) {
         guard let request = configUrlRequest(query: query) else { return }
         fetchRequest(with: request, completion: completion)
     }
@@ -61,7 +47,7 @@ class APIHelper {
                                   bodyParams: [String: Any]? = nil,
                                   httpMethod: String = "GET",
                                   isUsedToken: Bool = true) -> URLRequest? {
-        guard let url = baseURL?.appendingPathComponent(query) else { return nil}
+        guard let url = baseURL?.appendingPathComponent(query) else { return nil }
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         if isUsedToken {
@@ -82,15 +68,41 @@ class APIHelper {
     }
     
     private func fetchRequest<T:Codable>(with request: URLRequest,
-                                         completion: @escaping (T?) -> Void) {
+                                         completion: @escaping (Result <T, ErrorAPI>) -> Void) {
         session.dataTask(with: request) { data, response, error in
-            if error != nil {
-                completion(nil)
-            } else if let data = data {
+            if let error = error {
+                completion(.failure(.others(error.localizedDescription)))
+                return
+            }
+            
+            if let statusCode = (response as? HTTPURLResponse)?.statusCode,
+               let data = data,
+               statusCode <= 299 && statusCode >= 200 {
                 guard let result: T = self.decodeResult(data: data) else { return }
-                completion(result)
+                completion(.success(result))
+            } else {
+                self.errorHandler(with: response, data: data, completion: completion)
             }
         }.resume()
+    }
+    
+    private func errorHandler <T:Codable>(with response: URLResponse?,
+                                          data: Data?,
+                                          completion: @escaping (Result <T, ErrorAPI>) -> Void) {
+        guard let response = response as? HTTPURLResponse else  {
+            completion(.failure(.others("Someting went wrong. Please try again")))
+            return }
+        
+        switch response.statusCode {
+        case 400:
+            guard let data = data,
+                  let  errorBadRequest: ErrorResponse = self.decodeResult(data: data) else {
+                      completion(.failure(.badRequest("Someting went wrong with your request")))
+                      return }
+            completion(.failure(.badRequest(errorBadRequest.details)))
+        case 401: completion(.failure(.unauthorized("Session expired")))
+        default: completion(.failure(.others("Someting went wrong. Please try again")))
+        }
     }
     
     private func decodeResult<T:Codable>(data: Data) -> T? {

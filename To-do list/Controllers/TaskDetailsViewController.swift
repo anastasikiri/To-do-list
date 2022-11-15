@@ -30,8 +30,8 @@ class TaskDetailsViewController: UIViewController {
     private func prepareUIElements() {
         titleTextField.text = task.title
         contentTextField.text = task.content
-        dateTextField.text = task.deadline.convertToDateFormat(current: "yyyy-MM-dd HH:mm:ss",
-                                                               convertTo: "yyyy-MM-dd HH:mm")
+        dateTextField.text = task.deadline.convertToDateFormat(current: Constants.dataWithSec,
+                                                               convertTo: Constants.dataWithoutSec)
         updateStatusUI(statusButton, task.status)
     }
     
@@ -64,17 +64,32 @@ class TaskDetailsViewController: UIViewController {
     
     private func validateDataInput() -> Bool {
         if  titleTextField.text?.isEmpty == true {
-            Alert.showBasic(
+            TaskDetailsViewController.showBasicAlert(
                 title: "Please enter title of task",
                 vc: self)
             return false
         } else if contentTextField.text?.isEmpty == true {
-            Alert.showBasic(
+            TaskDetailsViewController.showBasicAlert(
                 title: "Please enter description of task",
                 vc: self)
             return false
         } else {
             return true
+        }
+    }
+    
+    private func proceedResult(result: Result <TaskResponse, APIHelper.ErrorAPI> ,
+                               message: String) {
+        var message = message
+        switch result {
+        case .success(_):
+            self.navigationController?.popViewController(animated: true)
+        case .failure(let error):
+            message = self.changeErrorMessage(with: error)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            TaskDetailsViewController.showAlertWithTimer(title: message, vc: self)
         }
     }
     
@@ -84,62 +99,32 @@ class TaskDetailsViewController: UIViewController {
     }
     
     @IBAction func submitButton(_ sender: UIButton) {
+        guard
+            validateDataInput(),
+            let title = titleTextField.text ,
+            let content = contentTextField.text ,
+            let deadline = dateTextField.text ,
+            let status = statusButton.titleLabel?.text
+        else { return }
         
-        if validateDataInput() {
-            guard
-                let title = titleTextField.text ,
-                let content = contentTextField.text ,
-                let deadline = dateTextField.text ,
-                let status = statusButton.titleLabel?.text
-            else {return}
-            
-            if task.id == 0 {
-                taskApiHelper.addTask(title: title,
-                                      content: content,
-                                      deadline: deadline,
-                                      status: status) { [weak self] result in
-                    guard let self = self else {
-                        return
-                    }
-                    var message = String()
-                    if let result = result {
-                        if result.status == "ok"  {
-                            message = "Task added successfully"
-                            self.navigationController?.popViewController(animated: true)
-                        } else {
-                            message = APIHelper.ErrorAPI.otherError.description
-                        }
-                    } else {
-                        message = APIHelper.ErrorAPI.networkError.description
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
-                        Alert.showBasicWithTimer(title: message, vc: self)
-                    }
-                }
-            } else {
-                taskApiHelper.editTask(id: "\(task.id)",
-                                       title: title,
-                                       content: content,
-                                       deadline: deadline,
-                                       status: status) { [weak self] result in
-                    guard let self = self else {
-                        return
-                    }
-                    var message = String()
-                    if let result = result {
-                        if result.status == "ok" {
-                            message = "Task edited successfully"
-                            self.navigationController?.popViewController(animated: true)
-                        } else {
-                            message = APIHelper.ErrorAPI.otherError.description
-                        }
-                    } else {
-                        message = APIHelper.ErrorAPI.networkError.description
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2){
-                        Alert.showBasicWithTimer(title: message, vc: self)
-                    }
-                }
+        if task.id == 0 {
+            taskApiHelper.addTask(title: title,
+                                  content: content,
+                                  deadline: deadline,
+                                  status: status) { [weak self] result in
+                guard let self = self else { return }
+                
+                self.proceedResult(result: result, message: "Task added successfully")
+            }
+        } else {
+            taskApiHelper.editTask(id: "\(task.id)",
+                                   title: title,
+                                   content: content,
+                                   deadline: deadline,
+                                   status: status) { [weak self] result in
+                guard let self = self else { return }
+                
+                self.proceedResult(result: result, message: "Task edited successfully")
             }
         }
     }

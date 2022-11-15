@@ -26,12 +26,12 @@ final class TaskApiHelper {
         }
     }
     
-    func executeTaskList(completion:@escaping ([Task]?) -> Void) {
+    func executeTaskList(completion:@escaping (Result <[Task], APIHelper.ErrorAPI>) -> Void) {
         apiHelper.createGetRequest(query: TaskMethod.allTask.path, completion: completion)
     }
     
     func deleteTask(id: String,
-                    completion: @escaping (NetworkResponse?) -> Void ){
+                    completion: @escaping (Result <NetworkResponse, APIHelper.ErrorAPI>) -> Void) {
         apiHelper.createPostRequest(query: TaskMethod.deleteTask.path,
                                     params: ["id": id],
                                     completion: completion)
@@ -41,12 +41,13 @@ final class TaskApiHelper {
                  content: String,
                  deadline: String,
                  status: String,
-                 completion: @escaping (TaskResponse?) -> Void){
+                 completion: @escaping (Result <TaskResponse, APIHelper.ErrorAPI>) -> Void) {
         apiHelper.createPostRequest(query: TaskMethod.addTask.path,
                                     params: ["title" : title,
                                              "content": content,
                                              "deadline": deadline,
-                                             "status": status], completion: completion)
+                                             "status": status],
+                                    completion: completion)
     }
     
     func editTask( id: String,
@@ -54,20 +55,22 @@ final class TaskApiHelper {
                    content: String,
                    deadline: String,
                    status: String,
-                   completion: @escaping (TaskResponse?) -> Void){
+                   completion: @escaping (Result <TaskResponse, APIHelper.ErrorAPI>) -> Void) {
         apiHelper.createPostRequest(query: TaskMethod.editTask.path,
                                     params: [ "id":id,
                                               "title" : title,
                                               "content": content,
                                               "deadline": deadline,
-                                              "status": status], completion: completion)
+                                              "status": status],
+                                    completion: completion)
     }
     
     func editStatusTask( id: String,
                          status: String,
-                         completion: @escaping (TaskResponse?) -> Void){
+                         completion: @escaping (Result <TaskResponse, APIHelper.ErrorAPI>) -> Void) {
         apiHelper.createPostRequest(query: TaskMethod.editTask.path,
                                     params: [ "id":id,
-                                              "status": status], completion: completion)
+                                              "status": status],
+                                    completion: completion)
     }
 }

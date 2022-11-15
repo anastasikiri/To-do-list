@@ -20,4 +20,7 @@ struct TaskResponse: Codable {
     let task: Task?
 }
 
+struct ErrorResponse: Codable {
+    let details: String
+}
 

@@ -10,8 +10,7 @@ import UIKit
 class TaskListViewController: UIViewController,
                               TaskTableViewCellDelegate{
     
-    var tasks = [Task]()
-    
+    private var tasks = [Task]()
     private let taskApiHelper = TaskApiHelper()
     
     @IBOutlet weak var tasksTableView: UITableView!
@@ -28,15 +27,23 @@ class TaskListViewController: UIViewController,
         super.viewDidAppear(animated)
         
         taskApiHelper.executeTaskList { [weak self] result in
-            guard let self = self else {
-                return
-            }
-            if let result = result {
+            guard let self = self else { return }
+            var message = String()
+            
+            switch result {
+            case .success(let result):
                 self.tasks = result
                 self.tasksTableView.reloadData()
+            case .failure(let error):
+                message = self.changeErrorMessage(with: error)
+            }
+            
+            if !message.isEmpty {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    TaskDetailsViewController.showAlertWithTimer(title: message, vc: self)
+                }
             }
         }
-        
     }
     
     @IBAction func addButton(_ sender: UIButton) {
@@ -54,23 +61,20 @@ class TaskListViewController: UIViewController,
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks[index].status = tasks[index].status.nextState
             
-            taskApiHelper.editStatusTask(id: "\(task.id)", status: tasks[index].status.rawValue) {[weak self] result in
-                guard let self = self else {
-                    return
-                }
+            taskApiHelper.editStatusTask(id: "\(task.id)",
+                                         status: tasks[index].status.rawValue) { [weak self] result in
+                guard let self = self else { return }
                 var message = String()
-                if let result = result {
-                    if result.status == "ok" {
-                        self.tasksTableView.reloadData()
-                    } else {
-                        message = APIHelper.ErrorAPI.otherError.description
-                    }
-                } else {
-                    message = APIHelper.ErrorAPI.networkError.description
+                
+                switch result {
+                case .success(_):
+                    self.tasksTableView.reloadData()
+                case.failure(let error):
                     self.tasks[index].status = self.tasks[index].status.backState
+                    message = self.changeErrorMessage(with: error)
                 }
                 if !message.isEmpty {
-                    Alert.showBasicWithTimer(title: message, vc: self)
+                    TaskListViewController.showAlertWithTimer(title: message, vc: self)
                 }
             }
         }
@@ -105,28 +109,23 @@ extension TaskListViewController: UITableViewDelegate {
                    forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             
-            taskApiHelper.deleteTask(id: "\(tasks[indexPath.row].id)") {[weak self] result in
-                guard let self = self else {
-                    return
-                }
+            taskApiHelper.deleteTask(id: "\(tasks[indexPath.row].id)") { [weak self] result in
+                guard let self = self else { return }
                 var message = String()
-                if let result = result {
-                    if result.status == "ok"  {
-                        message = "Task deleted"
-                        self.tasks.remove(at: indexPath.row)
-                        tableView.deleteRows(at: [indexPath], with: .fade)
-                    } else {
-                        message = APIHelper.ErrorAPI.otherError.description
-                    }
-                } else {
-                    message = APIHelper.ErrorAPI.networkError.description
+                
+                switch result {
+                case .success(_):
+                    message = "Task deleted"
+                    self.tasks.remove(at: indexPath.row)
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                case .failure(let error):
+                    message = self.changeErrorMessage(with: error)
                 }
-                Alert.showBasicWithTimer(title: message, vc: self)
+                TaskListViewController.showAlertWithTimer(title: message, vc: self)
             }
         }
     }
 }
-
 
 extension TaskListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
