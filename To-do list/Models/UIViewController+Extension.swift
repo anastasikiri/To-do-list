@@ -15,7 +15,7 @@ extension UIViewController {
         return storyboard.instantiateViewController(withIdentifier: identifier) as! T
     }
     
-    class func showBasicAlert(title: String, vc: UIViewController) {
+    func showBasicAlert(title: String, vc: UIViewController) {
         let alert = UIAlertController (title: title,
                                        message: nil,
                                        preferredStyle: .alert)
@@ -24,7 +24,7 @@ extension UIViewController {
         vc.present(alert,animated: true)
     }
     
-    class func showAlertWithTimer(title: String, vc: UIViewController) {
+    func showAlertWithTimer(title: String, vc: UIViewController) {
         let alert = UIAlertController (title: title,
                                        message: nil,
                                        preferredStyle: .alert)
@@ -36,7 +36,7 @@ extension UIViewController {
         }
     }
     
-    func changeErrorMessage(with error: APIHelper.ErrorAPI) -> String {
+    func parse(_ error: APIHelper.ErrorAPI) -> String {
         var message = String()
         
         switch error {

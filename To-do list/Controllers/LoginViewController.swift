@@ -44,7 +44,7 @@ class LoginViewController: UIViewController {
             } else if let passMessage = passMessage {
                 message = passMessage
             }
-            LoginViewController.showBasicAlert(title: message, vc: self)
+            showBasicAlert(title: message, vc: self)
             return false
         } else {
             return true
@@ -72,11 +72,11 @@ class LoginViewController: UIViewController {
                     message = "Something went wrong"
                 }
             case .failure(let error):
-                message = self.changeErrorMessage(with: error)
+                message = self.parse(error)
             }
             
             if !message.isEmpty {
-                LoginViewController.showBasicAlert(title: message, vc: self)
+                self.showBasicAlert(title: message, vc: self)
             }
         }
     }
@@ -95,9 +95,9 @@ class LoginViewController: UIViewController {
             case .success:
                 message = "Registration successfull"
             case .failure(let error):
-                message = self.changeErrorMessage(with: error) 
+                message = self.parse(error) 
             }
-            LoginViewController.showBasicAlert(title: message, vc: self)
+            self.showBasicAlert(title: message, vc: self)
         }
     }
 }

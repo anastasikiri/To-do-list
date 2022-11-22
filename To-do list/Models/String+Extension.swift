@@ -16,7 +16,7 @@ extension String {
     }
     
     func getDate() -> Date? {
-        Date.formatter.dateFormat = Constants.dataWithSec
+        Date.formatter.dateFormat = Constants.DateFormat.dateWithSec
         return Date.formatter.date(from: self)
     }
     

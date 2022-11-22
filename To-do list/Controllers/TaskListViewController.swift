@@ -23,6 +23,7 @@ class TaskListViewController: UIViewController,
         tasksTableView.delegate = self
         tasksTableView.dataSource = self
     }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -35,12 +36,9 @@ class TaskListViewController: UIViewController,
                 self.tasks = result
                 self.tasksTableView.reloadData()
             case .failure(let error):
-                message = self.changeErrorMessage(with: error)
-            }
-            
-            if !message.isEmpty {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    TaskDetailsViewController.showAlertWithTimer(title: message, vc: self)
+                message = self.parse(error)
+                Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { (timer) in
+                    self.showAlertWithTimer(title: message, vc: self)
                 }
             }
         }
@@ -71,10 +69,8 @@ class TaskListViewController: UIViewController,
                     self.tasksTableView.reloadData()
                 case.failure(let error):
                     self.tasks[index].status = self.tasks[index].status.backState
-                    message = self.changeErrorMessage(with: error)
-                }
-                if !message.isEmpty {
-                    TaskListViewController.showAlertWithTimer(title: message, vc: self)
+                    message = self.parse(error)
+                    self.showAlertWithTimer(title: message, vc: self)
                 }
             }
         }
@@ -119,9 +115,9 @@ extension TaskListViewController: UITableViewDelegate {
                     self.tasks.remove(at: indexPath.row)
                     tableView.deleteRows(at: [indexPath], with: .fade)
                 case .failure(let error):
-                    message = self.changeErrorMessage(with: error)
+                    message = self.parse(error)
                 }
-                TaskListViewController.showAlertWithTimer(title: message, vc: self)
+                self.showAlertWithTimer(title: message, vc: self)
             }
         }
     }

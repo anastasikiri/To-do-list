@@ -12,7 +12,7 @@ extension Date {
     static let formatter = DateFormatter()
  
     func formatDate() -> String {
-        Date.formatter.dateFormat = Constants.dataWithoutSec
+        Date.formatter.dateFormat = Constants.DateFormat.dateWithoutSec
         return Date.formatter.string(from: self)
     }
 }

@@ -30,8 +30,8 @@ class TaskDetailsViewController: UIViewController {
     private func prepareUIElements() {
         titleTextField.text = task.title
         contentTextField.text = task.content
-        dateTextField.text = task.deadline.convertToDateFormat(current: Constants.dataWithSec,
-                                                               convertTo: Constants.dataWithoutSec)
+        dateTextField.text = task.deadline.convertToDateFormat(current: Constants.DateFormat.dateWithSec,
+                                                               convertTo: Constants.DateFormat.dateWithoutSec)
         updateStatusUI(statusButton, task.status)
     }
     
@@ -64,14 +64,10 @@ class TaskDetailsViewController: UIViewController {
     
     private func validateDataInput() -> Bool {
         if  titleTextField.text?.isEmpty == true {
-            TaskDetailsViewController.showBasicAlert(
-                title: "Please enter title of task",
-                vc: self)
+            showBasicAlert(title: "Please enter title of task", vc: self)
             return false
         } else if contentTextField.text?.isEmpty == true {
-            TaskDetailsViewController.showBasicAlert(
-                title: "Please enter description of task",
-                vc: self)
+            showBasicAlert(title: "Please enter description of task", vc: self)
             return false
         } else {
             return true
@@ -85,11 +81,11 @@ class TaskDetailsViewController: UIViewController {
         case .success(_):
             self.navigationController?.popViewController(animated: true)
         case .failure(let error):
-            message = self.changeErrorMessage(with: error)
+            message = self.parse(error)
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            TaskDetailsViewController.showAlertWithTimer(title: message, vc: self)
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { (timer) in
+            self.showAlertWithTimer(title: message, vc: self)
         }
     }
     

@@ -75,14 +75,16 @@ class APIHelper {
                 return
             }
             
-            if let statusCode = (response as? HTTPURLResponse)?.statusCode,
-               let data = data,
-               statusCode <= 299 && statusCode >= 200 {
-                guard let result: T = self.decodeResult(data: data) else { return }
-                completion(.success(result))
-            } else {
-                self.errorHandler(with: response, data: data, completion: completion)
-            }
+            guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
+                  let data = data,
+                  statusCode <= 299 && statusCode >= 200 else {
+                      self.errorHandler(with: response, data: data, completion: completion)
+                      return
+                  }
+            
+            guard let result: T = self.decodeResult(data: data) else { return }
+            completion(.success(result))
+            
         }.resume()
     }
     
@@ -91,14 +93,16 @@ class APIHelper {
                                           completion: @escaping (Result <T, ErrorAPI>) -> Void) {
         guard let response = response as? HTTPURLResponse else  {
             completion(.failure(.others("Someting went wrong. Please try again")))
-            return }
+            return
+        }
         
         switch response.statusCode {
         case 400:
             guard let data = data,
                   let  errorBadRequest: ErrorResponse = self.decodeResult(data: data) else {
                       completion(.failure(.badRequest("Someting went wrong with your request")))
-                      return }
+                      return
+                  }
             completion(.failure(.badRequest(errorBadRequest.details)))
         case 401: completion(.failure(.unauthorized("Session expired")))
         default: completion(.failure(.others("Someting went wrong. Please try again")))

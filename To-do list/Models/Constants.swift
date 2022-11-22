@@ -8,6 +8,9 @@
 import Foundation
 
 struct Constants {
-    static let dataWithSec = "yyyy-MM-dd HH:mm:ss"
-    static let dataWithoutSec = "yyyy-MM-dd HH:mm"
+    
+    struct DateFormat {
+        static let dateWithSec = "yyyy-MM-dd HH:mm:ss"
+        static let dateWithoutSec = "yyyy-MM-dd HH:mm"
+    }
 }
