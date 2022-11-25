@@ -84,7 +84,7 @@ class TaskDetailsViewController: UIViewController {
             message = self.parse(error)
         }
         
-        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { (timer) in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.showAlertWithTimer(title: message, vc: self)
         }
     }

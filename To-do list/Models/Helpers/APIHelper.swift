@@ -28,12 +28,10 @@ class APIHelper {
     
     func createPostRequest<T:Codable>(query: String,
                                       params: [String: Any],
-                                      isUsedToken: Bool = true,
                                       completion: @escaping (Result <T, ErrorAPI>) -> Void) {
         guard let request = configUrlRequest(query: query,
                                              bodyParams: params,
-                                             httpMethod: "POST",
-                                             isUsedToken: isUsedToken) else { return }
+                                             httpMethod: "POST") else { return }
         fetchRequest(with: request, completion: completion)
     }
     
@@ -45,12 +43,11 @@ class APIHelper {
     
     private func configUrlRequest(query: String,
                                   bodyParams: [String: Any]? = nil,
-                                  httpMethod: String = "GET",
-                                  isUsedToken: Bool = true) -> URLRequest? {
+                                  httpMethod: String = "GET") -> URLRequest? {
         guard let url = baseURL?.appendingPathComponent(query) else { return nil }
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        if isUsedToken {
+        if APIHelper.token != "" {
             request.addValue("Bearer \(APIHelper.token)", forHTTPHeaderField: "Authorization")
         }
         request.httpMethod = httpMethod

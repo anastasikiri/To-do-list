@@ -18,9 +18,6 @@ final class AuthApiHelper {
             case .register: return "register"
             }
         }
-        var isUsedToken: Bool {
-            return false
-        }
     }
     
     private let apiHelper = APIHelper()
@@ -30,7 +27,6 @@ final class AuthApiHelper {
                               completion: @escaping (Result <LoginResponse, APIHelper.ErrorAPI>) -> Void) {
         apiHelper.createPostRequest(query: AuthMethod.login.path,
                                     params: ["email": email, "password": password],
-                                    isUsedToken: AuthMethod.login.isUsedToken,
                                     completion: completion)
     }
     
@@ -39,7 +35,6 @@ final class AuthApiHelper {
                                  completion: @escaping (Result <NetworkResponse, APIHelper.ErrorAPI>) -> Void) {
         apiHelper.createPostRequest(query: AuthMethod.register.path,
                                     params: ["email": email, "password": password],
-                                    isUsedToken: false,
                                     completion: completion)
     }
 }

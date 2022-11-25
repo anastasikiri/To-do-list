@@ -14,7 +14,7 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     
     private let authApiHelper = AuthApiHelper()
-    var message = String()
+    private var message = String()
     
     private func validateEmail() -> String? {
         if loginTextField.text?.isEmpty == true || loginTextField.text?.isValidEmail == false {
@@ -51,7 +51,7 @@ class LoginViewController: UIViewController {
         }
     }
     
-    @IBAction func signInButton(_ sender: UIButton) {
+    @IBAction private func signInButton(_ sender: UIButton) {
         guard
             validateCredentials(),
             let email = loginTextField.text,
@@ -81,7 +81,7 @@ class LoginViewController: UIViewController {
         }
     }
     
-    @IBAction func registerButton(_ sender: UIButton) {
+    @IBAction private func registerButton(_ sender: UIButton) {
         guard
             validateCredentials(),
             let email = loginTextField.text,
@@ -95,7 +95,7 @@ class LoginViewController: UIViewController {
             case .success:
                 message = "Registration successfull"
             case .failure(let error):
-                message = self.parse(error) 
+                message = self.parse(error)
             }
             self.showBasicAlert(title: message, vc: self)
         }
