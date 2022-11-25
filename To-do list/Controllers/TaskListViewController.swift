@@ -8,41 +8,75 @@
 import UIKit
 
 class TaskListViewController: UIViewController,
-                              TaskTableViewCellDelegate,
-                              TaskDetailsViewControllerDelegate {
+                              TaskTableViewCellDelegate{
     
     private var tasks = [Task]()
+    private let taskApiHelper = TaskApiHelper()
     
     @IBOutlet weak var tasksTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         tasksTableView.register(UINib(nibName: "TaskTableViewCell", bundle: nil),
                                 forCellReuseIdentifier: "TaskTableViewCell")
         tasksTableView.delegate = self
         tasksTableView.dataSource = self
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        taskApiHelper.executeTaskList { [weak self] result in
+            guard let self = self else { return }
+            var message = String()
+            
+            switch result {
+            case .success(let result):
+                self.tasks = result
+                self.tasksTableView.reloadData()
+            case .failure(let error):
+                message = self.parse(error)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    self.showAlertWithTimer(title: message, vc: self)
+                }
+            }
+        }
+    }
+    
     @IBAction func addButton(_ sender: UIButton) {
         let taskDetailsVC = TaskDetailsViewController.loadFromStoryboard(
             type: TaskDetailsViewController.self)
         taskDetailsVC.task = Task(title: "",
-                                  description: "",
-                                  deadline: .now,
+                                  content: "",
+                                  deadline: Date.now.formatDate(),
                                   status: .todo,
-                                  id: tasks.count+1)
-        taskDetailsVC.delegate = self
+                                  id: 0)
         self.navigationController?.pushViewController(taskDetailsVC, animated: true)
     }
     
     func didTapStatusButton(cell: TaskTableViewCell, didClickOnStatus task: Task) {
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks[index].status = tasks[index].status.nextState
+            
+            taskApiHelper.editStatusTask(id: "\(task.id)",
+                                         status: tasks[index].status.rawValue) { [weak self] result in
+                guard let self = self else { return }
+                var message = String()
+                
+                switch result {
+                case .success(_):
+                    self.tasksTableView.reloadData()
+                case.failure(let error):
+                    self.tasks[index].status = self.tasks[index].status.backState
+                    message = self.parse(error)
+                    self.showAlertWithTimer(title: message, vc: self)
+                }
+            }
         }
-        tasksTableView.reloadData()
     }
     
-    func taskDetails(_ controller: TaskDetailsViewController, didCreateUpdate task: Task) {
+    private func taskDetails(_ controller: TaskDetailsViewController, didCreateUpdate task: Task) {
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks[index] = task
         } else {
@@ -63,7 +97,6 @@ extension TaskListViewController: UITableViewDelegate {
         let taskDetailsVC = TaskDetailsViewController.loadFromStoryboard(
             type: TaskDetailsViewController.self)
         taskDetailsVC.task = tasks[indexPath.row]
-        taskDetailsVC.delegate = self
         self.navigationController?.pushViewController(taskDetailsVC, animated: true)
     }
     
@@ -71,9 +104,21 @@ extension TaskListViewController: UITableViewDelegate {
                    commit editingStyle: UITableViewCell.EditingStyle,
                    forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            tasks.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
             
+            taskApiHelper.deleteTask(id: "\(tasks[indexPath.row].id)") { [weak self] result in
+                guard let self = self else { return }
+                var message = String()
+                
+                switch result {
+                case .success(_):
+                    message = "Task deleted"
+                    self.tasks.remove(at: indexPath.row)
+                    tableView.deleteRows(at: [indexPath], with: .fade)
+                case .failure(let error):
+                    message = self.parse(error)
+                }
+                self.showAlertWithTimer(title: message, vc: self)
+            }
         }
     }
 }

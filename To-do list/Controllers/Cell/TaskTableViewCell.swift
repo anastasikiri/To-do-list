@@ -17,7 +17,7 @@ class TaskTableViewCell: UITableViewCell {
     weak var delegate: TaskTableViewCellDelegate?
     
     @IBOutlet private weak var titleLabel: UILabel!
-    @IBOutlet private weak var descriptionLabel: UILabel!
+    @IBOutlet private weak var contentLabel: UILabel!
     @IBOutlet private weak var deadlineLabel: UILabel!
     @IBOutlet private weak var statusButton: UIButton!
     
@@ -28,8 +28,9 @@ class TaskTableViewCell: UITableViewCell {
     
     func configure(_ task: Task) {
         titleLabel.text = task.title
-        descriptionLabel.text = task.description
-        deadlineLabel.text = task.deadline.formatDate()
+        contentLabel.text = task.content
+        deadlineLabel.text = task.deadline.convertToDateFormat(current: Constants.DateFormat.dateWithSec,
+                                                               convertTo: Constants.DateFormat.dateWithoutSec)
         statusButton.setTitle(task.status.rawValue, for: .normal)
         
         switch task.status {

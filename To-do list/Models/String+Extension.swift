@@ -16,7 +16,14 @@ extension String {
     }
     
     func getDate() -> Date? {
-        Date.formatter.dateFormat = "yyyy-MM-dd"
+        Date.formatter.dateFormat = Constants.DateFormat.dateWithSec
         return Date.formatter.date(from: self)
+    }
+    
+    func convertToDateFormat(current: String, convertTo: String) -> String {
+        Date.formatter.dateFormat = current
+        guard let date = Date.formatter.date(from: self) else { return self }
+        Date.formatter.dateFormat = convertTo
+        return  Date.formatter.string(from: date)
     }
 }
