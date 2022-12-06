@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		1707D30A28D2C19A00CAB1AE /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1707D30928D2C19A00CAB1AE /* UIViewController+Extension.swift */; };
 		1758F3AA28D95F1300F4662D /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1758F3A928D95F1300F4662D /* Date+Extension.swift */; };
+		17E8E13F2936F9F2007BF446 /* LoginModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E8E13E2936F9F2007BF446 /* LoginModel.swift */; };
+		17E8E141293BF78E007BF446 /* TaskListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E8E140293BF78E007BF446 /* TaskListModel.swift */; };
+		17E8E143293BF7C1007BF446 /* TaskDetailsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E8E142293BF7C1007BF446 /* TaskDetailsModel.swift */; };
 		5304821A2919CB4200A4DB54 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 530482192919CB4200A4DB54 /* Constants.swift */; };
 		5355D51E28E293B500172CF1 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5355D51D28E293B500172CF1 /* String+Extension.swift */; };
 		535927F628FD800D00EAF8C2 /* APIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 535927F528FD800D00EAF8C2 /* APIHelper.swift */; };
@@ -31,6 +34,9 @@
 /* Begin PBXFileReference section */
 		1707D30928D2C19A00CAB1AE /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		1758F3A928D95F1300F4662D /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		17E8E13E2936F9F2007BF446 /* LoginModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginModel.swift; sourceTree = "<group>"; };
+		17E8E140293BF78E007BF446 /* TaskListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListModel.swift; sourceTree = "<group>"; };
+		17E8E142293BF7C1007BF446 /* TaskDetailsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskDetailsModel.swift; sourceTree = "<group>"; };
 		530482192919CB4200A4DB54 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		5355D51D28E293B500172CF1 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		535927F528FD800D00EAF8C2 /* APIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIHelper.swift; sourceTree = "<group>"; };
@@ -63,6 +69,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		17E8E144293D734B007BF446 /* Exensions */ = {
+			isa = PBXGroup;
+			children = (
+				1758F3A928D95F1300F4662D /* Date+Extension.swift */,
+				5355D51D28E293B500172CF1 /* String+Extension.swift */,
+				1707D30928D2C19A00CAB1AE /* UIViewController+Extension.swift */,
+			);
+			path = Exensions;
+			sourceTree = "<group>";
+		};
 		530482182917474A00A4DB54 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -93,11 +109,11 @@
 		5376DBF428CAE18400AE9E6D /* To-do list */ = {
 			isa = PBXGroup;
 			children = (
+				5376DBF528CAE18400AE9E6D /* AppDelegate.swift */,
+				5376DBF728CAE18400AE9E6D /* SceneDelegate.swift */,
 				5376DC1128CAE33C00AE9E6D /* Models */,
 				5376DC1028CAE31A00AE9E6D /* View */,
 				5376DC0F28CAE29000AE9E6D /* Controllers */,
-				5376DBF528CAE18400AE9E6D /* AppDelegate.swift */,
-				5376DBF728CAE18400AE9E6D /* SceneDelegate.swift */,
 				5376DBFE28CAE18800AE9E6D /* Assets.xcassets */,
 				5376DC0028CAE18800AE9E6D /* LaunchScreen.storyboard */,
 				5376DC0328CAE18800AE9E6D /* Info.plist */,
@@ -128,11 +144,12 @@
 		5376DC1128CAE33C00AE9E6D /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				1758F3A928D95F1300F4662D /* Date+Extension.swift */,
-				5355D51D28E293B500172CF1 /* String+Extension.swift */,
+				17E8E13E2936F9F2007BF446 /* LoginModel.swift */,
+				17E8E140293BF78E007BF446 /* TaskListModel.swift */,
+				17E8E142293BF7C1007BF446 /* TaskDetailsModel.swift */,
 				5376DC1B28CC09A600AE9E6D /* Task.swift */,
-				1707D30928D2C19A00CAB1AE /* UIViewController+Extension.swift */,
 				530482192919CB4200A4DB54 /* Constants.swift */,
+				17E8E144293D734B007BF446 /* Exensions */,
 				530482182917474A00A4DB54 /* Helpers */,
 			);
 			path = Models;
@@ -220,14 +237,17 @@
 			files = (
 				1758F3AA28D95F1300F4662D /* Date+Extension.swift in Sources */,
 				535927F628FD800D00EAF8C2 /* APIHelper.swift in Sources */,
+				17E8E143293BF7C1007BF446 /* TaskDetailsModel.swift in Sources */,
 				5355D51E28E293B500172CF1 /* String+Extension.swift in Sources */,
 				5376DC0C28CAE25000AE9E6D /* TaskDetailsViewController.swift in Sources */,
+				17E8E13F2936F9F2007BF446 /* LoginModel.swift in Sources */,
 				5376DBFA28CAE18400AE9E6D /* LoginViewController.swift in Sources */,
 				5376DC1428CBF1E900AE9E6D /* TaskTableViewCell.swift in Sources */,
 				535C19E4290F8FF5001992C5 /* AuthApiHelper.swift in Sources */,
 				5304821A2919CB4200A4DB54 /* Constants.swift in Sources */,
 				535C19E6290F9007001992C5 /* TaskApiHelper.swift in Sources */,
 				5376DC0A28CAE23700AE9E6D /* TaskListViewController.swift in Sources */,
+				17E8E141293BF78E007BF446 /* TaskListModel.swift in Sources */,
 				535A2D532907075C00F65A49 /* APIResponse.swift in Sources */,
 				5376DBF628CAE18400AE9E6D /* AppDelegate.swift in Sources */,
 				5376DBF828CAE18400AE9E6D /* SceneDelegate.swift in Sources */,
