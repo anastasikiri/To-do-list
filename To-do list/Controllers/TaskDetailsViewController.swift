@@ -15,12 +15,30 @@ class TaskDetailsViewController: UIViewController {
     @IBOutlet private weak var dateTextField: UITextField!
     
     var task = Task()
-    private let taskApiHelper = TaskApiHelper()
+    private var message = String()
+    private var viewModel: TaskDetailsModelProtocol = TaskDetailsModel(client: TaskApiHelper())
     
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareUIElements()
         configureUIDatePicker()
+        
+        viewModel.observableState = { [weak self] state in
+            switch state {
+            case .taskChanged(let receivedMessage):
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    self?.showAlertWithTimer(title: receivedMessage, vc: self!)
+                }
+                self?.navigationController?.popViewController(animated: true)
+            case .failure(let error):
+                self?.message = self?.parse(error) ?? ""
+            case .validateDataInput(let receivedMessage):
+                self?.message = receivedMessage
+            }
+            if self?.message != "" {
+                self?.showBasicAlert(title: self!.message, vc: self!)
+            }
+        }
     }
     
     @objc func dateChange(datePicker: UIDatePicker) {
@@ -61,67 +79,17 @@ class TaskDetailsViewController: UIViewController {
         dateTextField.inputView = datePicker
         datePicker.date = task.deadline.getDate() ?? .now
     }
-    
-    private func validateDataInput() -> Bool {
-        if  titleTextField.text?.isEmpty == true {
-            showBasicAlert(title: "Please enter title of task", vc: self)
-            return false
-        } else if contentTextField.text?.isEmpty == true {
-            showBasicAlert(title: "Please enter description of task", vc: self)
-            return false
-        } else {
-            return true
-        }
-    }
-    
-    private func proceedResult(result: Result <TaskResponse, APIHelper.ErrorAPI> ,
-                               message: String) {
-        var message = message
-        switch result {
-        case .success(_):
-            self.navigationController?.popViewController(animated: true)
-        case .failure(let error):
-            message = self.parse(error)
-        }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.showAlertWithTimer(title: message, vc: self)
-        }
-    }
-    
     @IBAction func changeStatusButton(_ sender: UIButton) {
         task.status = task.status.nextState
         updateStatusUI(statusButton, task.status)
     }
     
     @IBAction func submitButton(_ sender: UIButton) {
-        guard
-            validateDataInput(),
-            let title = titleTextField.text ,
-            let content = contentTextField.text ,
-            let deadline = dateTextField.text ,
-            let status = statusButton.titleLabel?.text
-        else { return }
-        
-        if task.id == 0 {
-            taskApiHelper.addTask(title: title,
-                                  content: content,
-                                  deadline: deadline,
-                                  status: status) { [weak self] result in
-                guard let self = self else { return }
-                
-                self.proceedResult(result: result, message: "Task added successfully")
-            }
-        } else {
-            taskApiHelper.editTask(id: "\(task.id)",
-                                   title: title,
-                                   content: content,
-                                   deadline: deadline,
-                                   status: status) { [weak self] result in
-                guard let self = self else { return }
-                
-                self.proceedResult(result: result, message: "Task edited successfully")
-            }
-        }
+        viewModel.submit(title: titleTextField.text,
+                         content: contentTextField.text,
+                         deadline: dateTextField.text,
+                         status: statusButton.titleLabel?.text,
+                         task: task)
     }
 }

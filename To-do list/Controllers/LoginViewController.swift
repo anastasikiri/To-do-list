@@ -13,93 +13,41 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var loginTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     
-    private let authApiHelper = AuthApiHelper()
     private var message = String()
+    private var viewModel: LoginModelProtocol = LoginModel(client: AuthApiHelper())
     
-    private func validateEmail() -> String? {
-        if loginTextField.text?.isEmpty == true || loginTextField.text?.isValidEmail == false {
-            return "Please enter correct email"
-        }
-        return nil
-    }
-    
-    private func validatePass() -> String? {
-        if passwordTextField.text?.isEmpty == true {
-            return "Please enter your password"
-        }
-        else if passwordTextField.text!.count < 8 {
-            return "Password must have at least 8 characters"
-        }
-        return nil
-    }
-    
-    private func validateCredentials() -> Bool {
-        let loginMessage = validateEmail()
-        let passMessage = validatePass()
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        if loginMessage != nil || passMessage != nil {
-            var message = String()
-            if let loginMessage = loginMessage {
-                message = loginMessage
-            } else if let passMessage = passMessage {
-                message = passMessage
+        viewModel.observableState = { [weak self] state in
+            switch state {
+            case .loaded:
+                self?.message = String()
+                let taskListVC = TaskListViewController.loadFromStoryboard(type: TaskListViewController.self)
+                self?.navigationController?.pushViewController(taskListVC, animated: true)
+            case .loadedError(let receivedMessage):
+                self?.message = receivedMessage
+            case .failure(let error):
+                self?.message = self?.parse(error) ?? ""
+            case .registered(let receivedMessage):
+                self?.message = receivedMessage
+            case .validateEmail(let receivedMessage):
+                self?.message = receivedMessage
+            case .validatePassword(let receivedMessage):
+                self?.message = receivedMessage
             }
-            showBasicAlert(title: message, vc: self)
-            return false
-        } else {
-            return true
+            if self?.message != "" {
+                self?.showBasicAlert(title: self!.message, vc: self!)
+            }
         }
     }
     
     @IBAction private func signInButton(_ sender: UIButton) {
-        guard
-            validateCredentials(),
-            let email = loginTextField.text,
-            let password = passwordTextField.text
-        else { return }
+        viewModel.signIn(login: loginTextField.text, password: passwordTextField.text)
         
-        authApiHelper.executeLoginRequest(email: email, password: password) { [weak self] result in
-            guard let self = self else { return }
-            var message = String()
-            
-            switch result {
-            case .success(let result):
-                if let token = result.token {
-                    APIHelper.token = token
-                    let taskListVC = TaskListViewController.loadFromStoryboard(type: TaskListViewController.self)
-                    self.navigationController?.pushViewController(taskListVC, animated: true)
-                } else {
-                    message = "Something went wrong"
-                }
-            case .failure(let error):
-                message = self.parse(error)
-            }
-            
-            if !message.isEmpty {
-                self.showBasicAlert(title: message, vc: self)
-            }
-        }
     }
     
     @IBAction private func registerButton(_ sender: UIButton) {
-        guard
-            validateCredentials(),
-            let email = loginTextField.text,
-            let password = passwordTextField.text
-        else { return }
-        
-        authApiHelper.executeRegisterRequest(email: email, password: password) { [weak self] result in
-            guard let self = self else { return }
-            var message = String()
-            switch result {
-            case .success:
-                message = "Registration successfull"
-            case .failure(let error):
-                message = self.parse(error)
-            }
-            self.showBasicAlert(title: message, vc: self)
-        }
-    }
+        viewModel.register(login: loginTextField.text, password: passwordTextField.text)
+    }    
 }
-
-
