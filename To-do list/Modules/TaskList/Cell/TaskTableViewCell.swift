@@ -23,7 +23,8 @@ class TaskTableViewCell: UITableViewCell {
     
     @IBAction func tapStatusButton(_ sender: UIButton) {
         if let task = task {
-            self.delegate?.didTapStatusButton(cell: self, didClickOnStatus: task)}
+            self.delegate?.didTapStatusButton(cell: self, didClickOnStatus: task)
+        }
     }
     
     func configure(_ task: Task) {

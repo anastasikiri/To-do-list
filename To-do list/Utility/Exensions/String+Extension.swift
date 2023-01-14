@@ -2,7 +2,7 @@
 //  String+Extension.swift
 //  To-do list
 //
-//  Created by Kyrylo Tokar on 2022-09-26.
+//  Created by Anastasia Bilous on 2022-09-26.
 //
 
 import Foundation

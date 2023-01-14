@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  To-do list
 //
-//  Created by Kyrylo Tokar on 2022-09-08.
+//  Created by Anastasia Bilous on 2022-09-08.
 //
 
 import UIKit
