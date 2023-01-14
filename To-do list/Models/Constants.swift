@@ -2,7 +2,7 @@
 //  Constants.swift
 //  To-do list
 //
-//  Created by Kyrylo Tokar on 2022-11-07.
+//  Created by Anastasia Bilous on 2022-11-07.
 //
 
 import Foundation

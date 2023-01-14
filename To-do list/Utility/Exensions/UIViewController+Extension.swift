@@ -2,7 +2,7 @@
 //  UIViewController+Extension.swift
 //  To-do list
 //
-//  Created by Kyrylo Tokar on 2022-09-14.
+//  Created by Anastasia Bilous on 2022-09-14.
 //
 
 import UIKit
@@ -46,8 +46,8 @@ extension UIViewController {
             message = msg
             self.navigationController?.popToRootViewController(animated: true)
         case let .others(msg):
-            message = msg        
-        }        
+            message = msg
+        }
         return message
     }
 }

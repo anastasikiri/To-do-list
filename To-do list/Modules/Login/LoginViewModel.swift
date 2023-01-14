@@ -2,12 +2,12 @@
 //  LoginViewModel.swift
 //  To-do list
 //
-//  Created by Kyrylo Tokar on 2022-11-29.
+//  Created by Anastasia Bilous on 2022-11-29.
 //
 
 import Foundation
 
-enum LoginModelState {
+enum LoginViewModelState {
     case loaded
     case registered(String)
     case loadedError(String)
@@ -17,41 +17,42 @@ enum LoginModelState {
 }
 
 
-protocol LoginModelProtocol {
-    func signIn(login: String?, password: String?)
-    func register(login: String?, password: String?)
+protocol LoginViewModelProtocol {
+    func signIn(login: String, password: String)
+    func register(login: String, password: String)
     
-    var observableState: ((LoginModelState) -> Void)? { get set }
+    var observableState: ((LoginViewModelState) -> Void)? { get set }
 }
 
 
-class LoginModel: LoginModelProtocol {
+class LoginViewModel: LoginViewModelProtocol {
   
-    var observableState: ((LoginModelState) -> Void)?
-    private let authApiHelper: AuthApiHelper
+    var observableState: ((LoginViewModelState) -> Void)?
+    private let api: AuthAPIHelperProtocol
     
-    init(client: AuthApiHelper) {
-        self.authApiHelper = client
+    init(api: AuthAPIHelperProtocol) {
+        self.api = api
     }
-    
-    private func validateEmail(login: String?) -> String? {
-        if login?.isEmpty == true || login?.isValidEmail == false {
+
+    // MARK: - validation
+    private func validateEmail(login: String) -> String? {
+        if login.isEmpty == true || login.isValidEmail == false {
             return "Please enter correct email"
         }
         return nil
     }
     
-    private func validatePass(password: String?) -> String? {
-        if password?.isEmpty == true {
+    private func validatePass(password: String) -> String? {
+        if password.isEmpty == true {
             return "Please enter your password"
         }
-        else if password!.count < 8 {
+        else if password.count < 8 {
             return "Password must have at least 8 characters"
         }
         return nil
     }
     
-    private func validateCredentials(login: String?, password: String?) -> Bool {
+    private func validateCredentials(login: String, password: String) -> Bool {
         let loginMessage = validateEmail(login: login)
         let passMessage = validatePass(password: password)
         
@@ -66,15 +67,12 @@ class LoginModel: LoginModelProtocol {
             return true
         }
     }
+
+    // MARK: - Public functions
+    func signIn(login: String, password: String) {
+        guard validateCredentials(login: login, password: password) else { return }
         
-    func signIn(login: String?, password: String?) {
-        guard
-            validateCredentials(login: login, password: password),
-            let email = login,
-            let password = password
-        else { return }
-        
-        authApiHelper.executeLoginRequest(email: email, password: password) { [weak self] result in
+        api.executeLoginRequest(email: login, password: password) { [weak self] result in
             guard let self = self else { return }
             var message = String()
             
@@ -93,14 +91,10 @@ class LoginModel: LoginModelProtocol {
         }
     }
     
-    func register(login: String?, password: String?) {
-        guard
-            validateCredentials(login: login, password: password),
-            let email = login,
-            let password = password
-        else { return }
+    func register(login: String, password: String) {
+        guard validateCredentials(login: login, password: password) else { return }
         
-        authApiHelper.executeRegisterRequest(email: email, password: password) { [weak self] result in
+        api.executeRegisterRequest(email: login, password: password) { [weak self] result in
             guard let self = self else { return }
             var message = String()
             switch result {

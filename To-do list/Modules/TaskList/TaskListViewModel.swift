@@ -2,39 +2,40 @@
 //  File.swift
 //  To-do list
 //
-//  Created by Kyrylo Tokar on 2022-12-03.
+//  Created by Anastasia Bilous on 2022-12-03.
 //
 
 import Foundation
 
-enum TaskListModelState {
+enum TaskListViewModelState {
     case loaded([Task])
     case failure(APIHelper.ErrorAPI)
-    case deletedask(String, IndexPath)
+    case deleteTask(String, IndexPath)
 }
 
-protocol TaskListModelProtocol {
+protocol TaskListViewModelProtocol {
     func load()
     func changeStatus(cell: TaskTableViewCell, didClickOnStatus task: Task)
     func sortTasks(_ tasks: [Task]) -> [Task]
     func deleteTask(indexPath: IndexPath)
     
-    var observableState: ((TaskListModelState) -> Void)? { get set }
+    var observableState: ((TaskListViewModelState) -> Void)? { get set }
 }
 
-
-class TaskListModel: TaskListModelProtocol {
+class TaskListViewModel: TaskListViewModelProtocol {
     
-    var observableState: ((TaskListModelState) -> Void)?
-    private let taskApiHelper: TaskApiHelper
+    private let api: TaskAPIHelperProtocol
     private var tasks = [Task]()
-    
-    init(client: TaskApiHelper) {
-        self.taskApiHelper = client
+
+    var observableState: ((TaskListViewModelState) -> Void)?
+
+    init(api: TaskAPIHelperProtocol) {
+        self.api = api
     }
-    
+
+    // MARK: - Public funcs
     func load() {
-        taskApiHelper.executeTaskList { [weak self] result in
+        api.loadTasks { [weak self] result in
             guard let self = self else { return }
 
             switch result {
@@ -52,8 +53,8 @@ class TaskListModel: TaskListModelProtocol {
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks[index].status = tasks[index].status.nextState
             
-            taskApiHelper.editStatusTask(id: "\(task.id)",
-                                         status: tasks[index].status.rawValue) { [weak self] result in
+            api.editTaskStatus(id: "\(task.id)",
+                               status: tasks[index].status.rawValue) { [weak self] result in
                 guard let self = self else { return }
                 
                 switch result {
@@ -72,13 +73,13 @@ class TaskListModel: TaskListModelProtocol {
     }
     
     func deleteTask(indexPath: IndexPath) {
-        taskApiHelper.deleteTask(id: "\(tasks[indexPath.row].id)") { [weak self] result in
+        api.deleteTask(id: "\(tasks[indexPath.row].id)") { [weak self] result in
             guard let self = self else { return }
             
             switch result {
             case .success(_):
                 let message = "Task deleted"
-                self.observableState?(.deletedask(message, indexPath))
+                self.observableState?(.deleteTask(message, indexPath))
             case .failure(let error):
                 self.observableState?(.failure(error))
             }

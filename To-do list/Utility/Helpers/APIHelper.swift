@@ -2,7 +2,7 @@
 //  APICaller.swift
 //  To-do list
 //
-//  Created by Kyrylo Tokar on 2022-10-17.
+//  Created by Anastasia Bilous on 2022-10-17.
 //
 
 import Foundation
@@ -19,6 +19,7 @@ class APIHelper {
     static var token = ""
     
     private var session: URLSession
+    
     init() {
         let configuration = URLSessionConfiguration.default
         session = URLSession(configuration: configuration,
